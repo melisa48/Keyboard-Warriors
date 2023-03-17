@@ -1,13 +1,11 @@
 const express = require("express");
 const createError = require("http-errors");
+const rootRoutes = require("./routes/root.js");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const rootRoutes = require("./routes/root.js");
-
 app.use("/", rootRoutes);
-
 app.use((request, response, next) => {
   next(createError(404));
 });
