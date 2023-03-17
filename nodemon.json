@@ -1,0 +1,6 @@
+{
+  "ext": "js,ejs",
+  "ignore": [
+    "backend/static"
+  ]
+}

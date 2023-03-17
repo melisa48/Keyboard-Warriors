@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node ./backend/server.js",
-    "start:dev": "nodemon --watch backend ./backend/server.js",
+    "start:dev": "concurrently \"npm:server:dev\" \"npm:build:dev\"",
+    "server:dev": "NODE_ENV=development nodemon --watch backend ./backend/server.js",
     "build": "webpack",
     "build:dev": "webpack --watch"
   },
@@ -28,6 +29,9 @@
   },
   "devDependencies": {
     "babel-loader": "^9.1.2",
+    "concurrently": "^7.6.0",
+    "connect-livereload": "^0.6.1",
+    "livereload": "^0.9.3",
     "nodemon": "^2.0.21",
     "webpack": "^5.76.2",
     "webpack-cli": "^5.0.1"
