@@ -32,6 +32,8 @@ app.use((request, response, next) => {
   next(createError(404));
 });
 app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
