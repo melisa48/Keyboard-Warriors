@@ -1,0 +1,20 @@
+{
+  "name": "team-keyboardwarriors",
+  "version": "1.0.0",
+  "description": "Term project with goal to create web-based game.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/csc-667-spring-2023-roberts/term-project-keyboardwarriors.git"
+  },
+  "keywords": [],
+  "author": "Jay Gupta",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/csc-667-spring-2023-roberts/term-project-keyboardwarriors/issues"
+  },
+  "homepage": "https://github.com/csc-667-spring-2023-roberts/term-project-keyboardwarriors#readme"
+}
