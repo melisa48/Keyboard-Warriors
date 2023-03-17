@@ -9,7 +9,8 @@
     "start:dev": "concurrently \"npm:server:dev\" \"npm:build:dev\"",
     "server:dev": "NODE_ENV=development nodemon --watch backend ./backend/server.js",
     "build": "webpack",
-    "build:dev": "webpack --watch"
+    "build:dev": "webpack --watch",
+    "prepare": "husky install"
   },
   "repository": {
     "type": "git",
@@ -33,9 +34,15 @@
     "babel-loader": "^9.1.2",
     "concurrently": "^7.6.0",
     "connect-livereload": "^0.6.1",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.0",
     "livereload": "^0.9.3",
     "nodemon": "^2.0.21",
+    "prettier": "^2.8.4",
     "webpack": "^5.76.2",
     "webpack-cli": "^5.0.1"
+  },
+  "lint-staged": {
+    "**/*": "prettier --write --ignore-unknown"
   }
 }
