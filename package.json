@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/csc-667-spring-2023-roberts/term-project-keyboardwarriors/issues"
   },
-  "homepage": "https://github.com/csc-667-spring-2023-roberts/term-project-keyboardwarriors#readme"
+  "homepage": "https://github.com/csc-667-spring-2023-roberts/term-project-keyboardwarriors#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }
