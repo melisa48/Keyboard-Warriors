@@ -1,6 +1,6 @@
 const express = require("express");
 const createError = require("http-errors");
-const rootRoutes = require("./routes/root.js");
+const rootRoutes = require("./routes/root");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
