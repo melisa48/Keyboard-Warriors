@@ -7,7 +7,7 @@ const {
   logInRoutes,
   profileRoutes,
   signUpRoutes,
-} = require("./routes/root");
+} = require("./routes/index");
 const path = require("path");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
