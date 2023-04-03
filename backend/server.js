@@ -1,6 +1,13 @@
 const express = require("express");
 const createError = require("http-errors");
-const rootRoutes = require("./routes/root");
+const {
+  gameRoutes,
+  homeRoutes,
+  lobbyRoutes,
+  logInRoutes,
+  profileRoutes,
+  signUpRoutes,
+} = require("./routes/root");
 const path = require("path");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
@@ -27,7 +34,14 @@ app.set("view engine", "ejs");
 
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "static")));
-app.use("/", rootRoutes);
+
+app.use("/", homeRoutes);
+app.use("/games", gameRoutes);
+app.use("/lobby", lobbyRoutes);
+app.use("/log-in", logInRoutes);
+app.use("/profile", profileRoutes);
+app.use("/sign-up", signUpRoutes);
+
 app.use((request, response, next) => {
   next(createError(404));
 });
