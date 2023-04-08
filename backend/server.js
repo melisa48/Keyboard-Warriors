@@ -9,6 +9,7 @@ const {
   profileRoutes,
   signUpRoutes,
 } = require("./routes/index");
+const testRoutes = require("./routes/testing/index");
 const path = require("path");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
@@ -42,6 +43,7 @@ app.use("/lobby", lobbyRoutes);
 app.use("/log-in", logInRoutes);
 app.use("/profile", profileRoutes);
 app.use("/sign-up", signUpRoutes);
+app.use("/test", testRoutes);
 
 app.use((request, response, next) => {
   next(createError(404));
