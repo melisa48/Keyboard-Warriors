@@ -12,6 +12,8 @@ const path = require("path");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 
+require("dotenv").config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 if (process.env.NODE_ENV === "development") {
