@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const createError = require("http-errors");
 const {
@@ -8,6 +9,7 @@ const {
   profileRoutes,
   signUpRoutes,
 } = require("./routes/index");
+const testRoutes = require("./routes/testing/index");
 const path = require("path");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
@@ -41,6 +43,7 @@ app.use("/lobby", lobbyRoutes);
 app.use("/log-in", logInRoutes);
 app.use("/profile", profileRoutes);
 app.use("/sign-up", signUpRoutes);
+app.use("/test", testRoutes);
 
 app.use((request, response, next) => {
   next(createError(404));
@@ -48,7 +51,6 @@ app.use((request, response, next) => {
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
 });
