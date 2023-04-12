@@ -1,14 +1,5 @@
 /* eslint-disable camelcase */
 
-/*
-id int PK
-  player_count int
-  title varchar(255)
-  created_at timestamp
-  started_at timestamp
-  pass_count int
-*/
-
 /**
  *
  * @param {import("node-pg-migrate/dist/types").MigrationBuilder} pgm
