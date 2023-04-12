@@ -130,3 +130,5 @@ dist
 .pnp.*
 
 backend/static/scripts/bundle.js
+
+table_insertions/
