@@ -9,7 +9,8 @@ const {
   profileRoutes,
   signUpRoutes,
 } = require("./routes/index");
-const testRoutes = require("./routes/testing/index");
+const canonicalTilesRoute = require("./routes/testing/canonical_tiles");
+const boardRoute = require("./routes/testing/board");
 const path = require("path");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
@@ -43,7 +44,8 @@ app.use("/lobby", lobbyRoutes);
 app.use("/log-in", logInRoutes);
 app.use("/profile", profileRoutes);
 app.use("/sign-up", signUpRoutes);
-app.use("/test", testRoutes);
+app.use("/canonical-tiles", canonicalTilesRoute);
+app.use("/board", boardRoute);
 
 app.use((request, response, next) => {
   next(createError(404));
