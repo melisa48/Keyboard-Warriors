@@ -129,6 +129,4 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-backend/static/scripts/bundle.js
-
 table_insertions/
