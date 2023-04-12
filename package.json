@@ -14,7 +14,7 @@
     "db:create": "node-pg-migrate create -- ",
     "db:migrate": "node-pg-migrate up",
     "db:rollback": "node-pg-migrate down",
-    "postinstall": "node-pg-migrate up -- --no-check-order"
+    "postinstall": "node-pg-migrate up --no-check-order"
   },
   "repository": {
     "type": "git",
