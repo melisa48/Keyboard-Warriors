@@ -7,4 +7,11 @@ router.get("/", (request, response) => {
   });
 });
 
+router.post("/", (request, response) => {
+  console.log("Log-In POST route.");
+  response.render("log-in", {
+    title: "Term Project (Log-In)",
+  });
+});
+
 module.exports = router;
