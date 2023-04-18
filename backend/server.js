@@ -16,6 +16,7 @@ const cookieParser = require("cookie-parser");
 const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
 const db = require("./db/connection");
+const requireAuthentication = require("./middleware/require-authentication");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -53,9 +54,9 @@ app.use(
 );
 
 app.use("/", homeRoutes);
-app.use("/games", gameRoutes);
-app.use("/lobby", lobbyRoutes);
-app.use("/profile", profileRoutes);
+app.use("/games", requireAuthentication, gameRoutes);
+app.use("/lobby", requireAuthentication, lobbyRoutes);
+app.use("/profile", requireAuthentication, profileRoutes);
 app.use("/authentication", authenticationRoutes);
 app.use("/canonical-tiles", canonicalTilesRoute);
 app.use("/board", boardRoute);

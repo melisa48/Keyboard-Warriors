@@ -6,7 +6,7 @@ router.get("/:id", (request, response) => {
 
   response.render("game", {
     title: "Term Project (Game)",
-    id: id,
+    gameID: id,
     ...request.session.user,
   });
 });
