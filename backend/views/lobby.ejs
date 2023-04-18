@@ -14,8 +14,14 @@
       <li><a href="/authentication/log-out">Log-Out</a></li>
     </ul>
 
-    <p>You are: <%= username %> <%= email %> (<%= id %>)</p>
+    <div id="chat-container">
+      <div id="messages"></div>
+      <label>
+        <input id="chatMessage" name="chat-message" placeholder="Message..." />
+      </label>
+    </div>
 
     <script src="/scripts/bundle.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>

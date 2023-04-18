@@ -7,6 +7,7 @@ const {
   lobbyRoutes,
   profileRoutes,
   authenticationRoutes,
+  chatRoutes,
 } = require("./routes/index");
 const canonicalTilesRoute = require("./routes/testing/canonical_tiles");
 const boardRoute = require("./routes/testing/board");
@@ -17,6 +18,7 @@ const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
 const db = require("./db/connection");
 const requireAuthentication = require("./middleware/require-authentication");
+const initSockets = require("./sockets/initialize");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -43,28 +45,29 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "static")));
 app.use(cookieParser());
-app.use(
-  session({
-    store: new pgSession({ pgPromise: db }),
-    secret: process.env.SECRET,
-    resave: false,
-    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 },
-    saveUninitialized: false,
-  })
-);
+const sessionMiddleware = session({
+  store: new pgSession({ pgPromise: db }),
+  secret: process.env.SECRET,
+  resave: false,
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 },
+  saveUninitialized: false,
+});
+app.use(sessionMiddleware);
+const server = initSockets(app, sessionMiddleware);
 
 app.use("/", homeRoutes);
 app.use("/games", requireAuthentication, gameRoutes);
 app.use("/lobby", requireAuthentication, lobbyRoutes);
 app.use("/profile", requireAuthentication, profileRoutes);
 app.use("/authentication", authenticationRoutes);
+app.use("/chat", chatRoutes);
 app.use("/canonical-tiles", canonicalTilesRoute);
 app.use("/board", boardRoute);
 
-app.use((request, response, next) => {
-  next(createError(404));
+server.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
+app.use((request, response, next) => {
+  next(createError(404));
 });
