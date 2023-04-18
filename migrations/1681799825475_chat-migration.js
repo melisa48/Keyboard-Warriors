@@ -1,27 +1,19 @@
 /* eslint-disable camelcase */
 
+exports.shorthands = undefined;
+
 /**
  * @param {import("node-pg-migrate/dist/types").MigrationBuilder} pgm
  */
 exports.up = (pgm) => {
-  pgm.createTable("users", {
+  pgm.createTable("chat", {
     id: "id",
-    full_name: {
-      type: "varchar(70)",
+    sender_id: {
+      type: "integer",
       notNull: true,
     },
-    username: {
-      type: "varchar(50)",
-      unique: true,
-      notNull: true,
-    },
-    email: {
+    message: {
       type: "varchar(255)",
-      unique: true,
-      notNull: true,
-    },
-    password: {
-      type: "char(60)",
       notNull: true,
     },
     created_at: {
@@ -36,5 +28,5 @@ exports.up = (pgm) => {
  * @param {import("node-pg-migrate/dist/types").MigrationBuilder} pgm
  */
 exports.down = (pgm) => {
-  pgm.dropTable("users");
+  pgm.dropTable("chat");
 };
