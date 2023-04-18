@@ -4,16 +4,17 @@
     <link rel="stylesheet" href="/stylesheets/home.css" type="text/css">
   </head>
   <body>
-    <p>Game <%= id %> (Authenticated)</p>
+    <p>Game <%= gameID %> (Authenticated)</p>
     
     <ul>
       <li><a href="/">Home</a></li>
       <li><a href="/games/42">Game with ID 42</a></li>
       <li><a href="/lobby">Lobby</a></li>
-      <li><a href="/log-in">Log-In</a></li>
       <li><a href="/profile">Profile</a></li>
-      <li><a href="/sign-up">Sign-Up</a></li>
+      <li><a href="/authentication/log-out">Log-Out</a></li>
     </ul>
+
+    <p>You are: <%= username %> <%= email %> (<%= id %>)</p>
 
     <script src="/scripts/bundle.js"></script>
   </body>

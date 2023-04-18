@@ -5,15 +5,18 @@ const {
   gameRoutes,
   homeRoutes,
   lobbyRoutes,
-  logInRoutes,
   profileRoutes,
-  signUpRoutes,
+  authenticationRoutes,
 } = require("./routes/index");
 const canonicalTilesRoute = require("./routes/testing/canonical_tiles");
 const boardRoute = require("./routes/testing/board");
 const path = require("path");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const pgSession = require("connect-pg-simple")(session);
+const db = require("./db/connection");
+const requireAuthentication = require("./middleware/require-authentication");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -40,13 +43,21 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "static")));
 app.use(cookieParser());
+app.use(
+  session({
+    store: new pgSession({ pgPromise: db }),
+    secret: process.env.SECRET,
+    resave: false,
+    cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 },
+    saveUninitialized: false,
+  })
+);
 
 app.use("/", homeRoutes);
-app.use("/games", gameRoutes);
-app.use("/lobby", lobbyRoutes);
-app.use("/log-in", logInRoutes);
-app.use("/profile", profileRoutes);
-app.use("/sign-up", signUpRoutes);
+app.use("/games", requireAuthentication, gameRoutes);
+app.use("/lobby", requireAuthentication, lobbyRoutes);
+app.use("/profile", requireAuthentication, profileRoutes);
+app.use("/authentication", authenticationRoutes);
 app.use("/canonical-tiles", canonicalTilesRoute);
 app.use("/board", boardRoute);
 
