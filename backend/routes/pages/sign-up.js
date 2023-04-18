@@ -20,7 +20,14 @@ router.post("/", async (request, response) => {
 
   try {
     // add record to database
-    await Users.create(full_name, username, email, hash);
+    const { id } = await Users.create(full_name, username, email, hash);
+
+    // create a user object within the session
+    request.session.user = {
+      id,
+      username,
+      email,
+    };
 
     // redirect the user to the lobby as they are now authenticated
     response.redirect("/lobby");
