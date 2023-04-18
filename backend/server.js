@@ -5,10 +5,8 @@ const {
   gameRoutes,
   homeRoutes,
   lobbyRoutes,
-  logInRoutes,
   profileRoutes,
-  signUpRoutes,
-  logOutRoutes,
+  authenticationRoutes,
 } = require("./routes/index");
 const canonicalTilesRoute = require("./routes/testing/canonical_tiles");
 const boardRoute = require("./routes/testing/board");
@@ -57,10 +55,8 @@ app.use(
 app.use("/", homeRoutes);
 app.use("/games", gameRoutes);
 app.use("/lobby", lobbyRoutes);
-app.use("/log-in", logInRoutes);
 app.use("/profile", profileRoutes);
-app.use("/sign-up", signUpRoutes);
-app.use("/log-out", logOutRoutes);
+app.use("/authentication", authenticationRoutes);
 app.use("/canonical-tiles", canonicalTilesRoute);
 app.use("/board", boardRoute);
 
