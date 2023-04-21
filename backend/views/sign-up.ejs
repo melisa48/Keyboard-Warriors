@@ -1,7 +1,6 @@
 <html>
   <head>
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/stylesheets/home.css" type="text/css">
+    <%- include('./partials/header', {title: title}); %>
   </head>
   <body>
     <%- include('./partials/navbar', {state: "sign-up"}); %>
