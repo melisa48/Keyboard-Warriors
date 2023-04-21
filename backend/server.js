@@ -1,26 +1,23 @@
 require("dotenv").config();
+const cookieParser = require("cookie-parser");
 const express = require("express");
+const morgan = require("morgan");
+const path = require("path");
+const pgSession = require("connect-pg-simple")(session);
+const session = require("express-session");
+
 const createError = require("http-errors");
-const {
-  gameRoutes,
-  homeRoutes,
-  lobbyRoutes,
-  profileRoutes,
-  authenticationRoutes,
-  chatRoutes,
-} = require("./routes/index");
+const {gameRoutes,homeRoutes,lobbyRoutes,
+      profileRoutes,authenticationRoutes,chatRoutes} = require("./routes/index");
 const canonicalTilesRoute = require("./routes/testing/canonical_tiles");
 const boardRoute = require("./routes/testing/board");
-const path = require("path");
-const morgan = require("morgan");
-const cookieParser = require("cookie-parser");
-const session = require("express-session");
-const pgSession = require("connect-pg-simple")(session);
+
 const db = require("./db/connection");
 const requireAuthentication = require("./middleware/require-authentication");
 const initSockets = require("./sockets/initialize");
 
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 if (process.env.NODE_ENV === "development") {
   const liveReload = require("livereload");
@@ -45,6 +42,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "static")));
 app.use(cookieParser());
+
 const sessionMiddleware = session({
   store: new pgSession({ pgPromise: db }),
   secret: process.env.SECRET,
@@ -52,6 +50,7 @@ const sessionMiddleware = session({
   cookie: { maxAge: 1000 * 60 * 60 * 24 * 7 },
   saveUninitialized: false,
 });
+
 app.use(sessionMiddleware);
 const server = initSockets(app, sessionMiddleware);
 
