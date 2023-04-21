@@ -1,0 +1,17 @@
+#formHolder {
+  text-align: center;
+}
+
+#formHolder form {
+  display: inline-block;
+  text-align: left;
+}
+
+form > input {
+  display: block;
+  margin-bottom: 10px;
+}
+
+#buttonHolder {
+  text-align: center;
+}

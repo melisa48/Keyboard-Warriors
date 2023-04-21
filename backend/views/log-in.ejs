@@ -1,32 +1,39 @@
 <html>
   <head>
     <%- include('./partials/header', {title: title}); %>
+    <link rel="stylesheet" href="/stylesheets/authentication.css" type="text/css">
   </head>
   <body>
     <div id="content-wrap">
       <%- include('./partials/navbar', {state: "log-in"}); %>
-      
+
       <h1 id="pageTitle">Log-In (Unauthenticated)</h1>
 
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/games/42">Game with ID 42</a></li>
-        <li><a href="/lobby">Lobby</a></li>
-        <li><a href="/profile">Profile</a></li>
-        <li><a href="/authentication/sign-up">Sign-Up</a></li>
-      </ul>
-
-      <form action="/authentication/log-in" method="post">
-        <label>
-          <em>Email</em>
-          <input name="email" type="email" placeholder="Email" autocomplete="email" required />
-        </label>
-        <label>
-          <em>Password</em>
-          <input name="password" type="password" autocomplete="current-password" required />
-        </label>
-        <input type="submit" value="Log In" />
-      </form>
+      <div id="formHolder">
+        <form action="/authentication/log-in" method="post">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Email"
+            autocomplete="email"
+            required />
+          
+          <label for="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password"
+            required />
+          
+          <div id="buttonHolder">
+            <input type="submit" value="Log In" />
+          </div>
+        </form>
+      </div>
     </div>
     <%- include('./partials/footer'); %>
   </body>

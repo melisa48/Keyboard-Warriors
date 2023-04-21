@@ -1,6 +1,7 @@
 <html>
   <head>
     <%- include('./partials/header', {title: title}); %>
+    <link rel="stylesheet" href="/stylesheets/authentication.css" type="text/css">
   </head>
   <body>
     <div id="content-wrap">
@@ -8,33 +9,47 @@
 
       <h1 id="pageTitle">Sign-Up (Unauthenticated)</h1>
 
-      <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/games/42">Game with ID 42</a></li>
-        <li><a href="/lobby">Lobby</a></li>
-        <li><a href="/profile">Profile</a></li>
-        <li><a href="/authentication/log-in">Log-In</a></li>
-      </ul>
-
-      <form action="/authentication/sign-up" method="post">
-        <label>
-          <em>Full Name</em>
-          <input name="full_name" placeholder="Full Name" autocomplete="full_name" required />
-        </label>
-        <label>
-          <em>Username</em>
-          <input name="username" placeholder="Username" autocomplete="username" required />
-        </label>
-        <label>
-          <em>Email</em>
-          <input name="email" type="email" placeholder="Email" autocomplete="email" required />
-        </label>
-        <label>
-          <em>Password</em>
-          <input name="password" type="password" autocomplete="new-password" required />
-        </label>
-        <input type="submit" value="Sign Up" />
-      </form>
+      <div id="formHolder">
+        <form action="/authentication/sign-up" method="post">
+          <label for="full_name">Full Name</label>
+          <input
+            id="full_name"
+            name="full_name"
+            placeholder="Full Name"
+            autocomplete="full_name"
+            required />
+          
+          <label for="username">Username</label>
+          <input
+            id="username"
+            name="username"
+            placeholder="Username"
+            autocomplete="username"
+            required />
+  
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Email"
+            autocomplete="email"
+            required />
+  
+          <label for="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Password"
+            autocomplete="new-password"
+            required />
+  
+          <div id="buttonHolder">
+            <input type="submit" value="Sign Up" />
+          </div>
+        </form>
+      </div>
     </div>
     <%- include('./partials/footer'); %>
   </body>
