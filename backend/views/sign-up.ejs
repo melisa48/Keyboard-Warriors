@@ -31,6 +31,9 @@
         <em>Password</em>
         <input name="password" type="password" autocomplete="new-password" required />
       </label>
+      <% if(locals.message){ %>
+        <span class="form-fail"> <%=message %></span>
+      <% } %>
       <input type="submit" value="Sign Up" />
     </form>
 
