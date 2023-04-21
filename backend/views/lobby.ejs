@@ -1,19 +1,20 @@
 <html>
-  <head>
-    <%- include('./partials/header', {title: title}); %>
-  </head>
-  <body>
-    <div id="content-wrap">
-      <%- include('./partials/navbar', {state: username}); %>
-      
+
+<head>
+  <%- include('./partials/header', {title: title}); %>
+</head>
+
+<body>
+  <div id="content-wrap">
+    <%- include('./partials/navbar', {state: username}); %>
+
       <h1 id="pageTitle">Lobby (Authenticated)</h1>
 
       <ul>
-        <li><a href="/">Home</a></li>
         <li><a href="/games/42">Game with ID 42</a></li>
         <li><a href="/lobby">Lobby</a></li>
         <li><a href="/profile">Profile</a></li>
-        <li><a href="/authentication/log-out">Log-Out</a></li>
+        <li><a href="/log-out">Log-Out</a></li>
       </ul>
 
       <div id="chat-container">
@@ -22,8 +23,9 @@
           <input id="chatMessage" name="chat-message" placeholder="Message..." />
         </label>
       </div>
-    </div>
-    <%- include('./partials/footer'); %>
+  </div>
+  <%- include('./partials/footer'); %>
     <script src="/socket.io/socket.io.js"></script>
-  </body>
+</body>
+
 </html>
