@@ -43,6 +43,11 @@ body {
   padding-bottom: 2.5rem;
 }
 
+#pageTitle {
+  margin-top: 2rem;
+  text-align: center;
+}
+
 /* Buttons */
 .btn {
   background-color: #a9a9a9;

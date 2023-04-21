@@ -1,11 +1,10 @@
 #authenticationButtons {
   text-align: center;
-  width: 100%;
 }
 
 #authenticationButtons a {
   display: block;
-  width: 5%;
+  width: 10%;
   margin: auto;
 }
 
