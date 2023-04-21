@@ -1,6 +1,46 @@
+/* Navbar: Credit to Adam111p: https://stackoverflow.com/a/47273110 */
+#navbar {
+  background-color: rgb(0, 221, 255);
+  height: 35px;
+  padding: 5px 0;
+  position: relative;
+}
+
+#navbar div {
+  display: inline-block;
+  position: absolute;
+}
+
+#logo {
+  left: 0px;
+}
+
+#logo img {
+  max-height: 50px;
+  max-width: 50px;
+}
+
+#gameTitle {
+  font-size: 30px;
+  left: 0%;
+  right: 0%;
+  text-align: center;
+}
+
+#accountDropdown {
+  right: 0%;
+}
+
 body {
-  background-color: teal;
-  color: white;
+  background-color: white;
+  color: black;
+  margin: 0px;
+  min-height: 100vh;
+  position: relative;
+}
+
+#content-wrap {
+  padding-bottom: 2.5rem;
 }
 
 /* Buttons */
@@ -12,4 +52,14 @@ body {
 
 .btn:hover {
   background-color: #808080;
+}
+
+/* Footer */
+#footer {
+  background-color: #808080;
+  bottom: 0;
+  padding: 15px 0;
+  position: absolute;
+  text-align: center;
+  width: 100%;
 }

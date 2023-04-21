@@ -3,19 +3,20 @@
     <%- include('./partials/header', {title: title}); %>
   </head>
   <body>
-    <%- include('./partials/navbar', {state: username}); %>
-    <p>Game <%= gameID %> (Authenticated)</p>
-    
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="/games/42">Game with ID 42</a></li>
-      <li><a href="/lobby">Lobby</a></li>
-      <li><a href="/profile">Profile</a></li>
-      <li><a href="/authentication/log-out">Log-Out</a></li>
-    </ul>
+    <div id="content-wrap">
+      <%- include('./partials/navbar', {state: username}); %>
+      <p>Game <%= gameID %> (Authenticated)</p>
+      
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/games/42">Game with ID 42</a></li>
+        <li><a href="/lobby">Lobby</a></li>
+        <li><a href="/profile">Profile</a></li>
+        <li><a href="/authentication/log-out">Log-Out</a></li>
+      </ul>
 
-    <p>You are: <%= username %> <%= email %> (<%= id %>)</p>
-
-    <script src="/scripts/bundle.js"></script>
+      <p>You are: <%= username %> <%= email %> (<%= id %>)</p>
+    </div>
+    <%- include('./partials/footer'); %>
   </body>
 </html>

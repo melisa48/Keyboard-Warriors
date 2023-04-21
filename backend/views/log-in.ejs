@@ -3,29 +3,30 @@
     <%- include('./partials/header', {title: title}); %>
   </head>
   <body>
-    <%- include('./partials/navbar', {state: "log-in"});%>
-    <p>Log-In (Unauthenticated)</p>
+    <div id="content-wrap">
+      <%- include('./partials/navbar', {state: "log-in"}); %>
+      <p>Log-In (Unauthenticated)</p>
 
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="/games/42">Game with ID 42</a></li>
-      <li><a href="/lobby">Lobby</a></li>
-      <li><a href="/profile">Profile</a></li>
-      <li><a href="/authentication/sign-up">Sign-Up</a></li>
-    </ul>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/games/42">Game with ID 42</a></li>
+        <li><a href="/lobby">Lobby</a></li>
+        <li><a href="/profile">Profile</a></li>
+        <li><a href="/authentication/sign-up">Sign-Up</a></li>
+      </ul>
 
-    <form action="/authentication/log-in" method="post">
-      <label>
-        <em>Email</em>
-        <input name="email" type="email" placeholder="Email" autocomplete="email" required />
-      </label>
-      <label>
-        <em>Password</em>
-        <input name="password" type="password" autocomplete="current-password" required />
-      </label>
-      <input type="submit" value="Log In" />
-    </form>
-
-    <script src="/scripts/bundle.js"></script>
+      <form action="/authentication/log-in" method="post">
+        <label>
+          <em>Email</em>
+          <input name="email" type="email" placeholder="Email" autocomplete="email" required />
+        </label>
+        <label>
+          <em>Password</em>
+          <input name="password" type="password" autocomplete="current-password" required />
+        </label>
+        <input type="submit" value="Log In" />
+      </form>
+    </div>
+    <%- include('./partials/footer'); %>
   </body>
 </html>

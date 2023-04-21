@@ -3,25 +3,26 @@
     <%- include('./partials/header', {title: title}); %>
   </head>
   <body>
-    <%- include('./partials/navbar', {state: username}); %>
-    <p>Lobby (Authenticated)</p>
+    <div id="content-wrap">
+      <%- include('./partials/navbar', {state: username}); %>
+      <p>Lobby (Authenticated)</p>
 
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="/games/42">Game with ID 42</a></li>
-      <li><a href="/lobby">Lobby</a></li>
-      <li><a href="/profile">Profile</a></li>
-      <li><a href="/authentication/log-out">Log-Out</a></li>
-    </ul>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/games/42">Game with ID 42</a></li>
+        <li><a href="/lobby">Lobby</a></li>
+        <li><a href="/profile">Profile</a></li>
+        <li><a href="/authentication/log-out">Log-Out</a></li>
+      </ul>
 
-    <div id="chat-container">
-      <div id="messages"></div>
-      <label>
-        <input id="chatMessage" name="chat-message" placeholder="Message..." />
-      </label>
+      <div id="chat-container">
+        <div id="messages"></div>
+        <label>
+          <input id="chatMessage" name="chat-message" placeholder="Message..." />
+        </label>
+      </div>
     </div>
-
-    <script src="/scripts/bundle.js"></script>
+    <%- include('./partials/footer'); %>
     <script src="/socket.io/socket.io.js"></script>
   </body>
 </html>
