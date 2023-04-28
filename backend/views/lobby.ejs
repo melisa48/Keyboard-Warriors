@@ -2,6 +2,20 @@
 
 <head>
   <%- include('./partials/header', {title: title}); %>
+  <style>
+    #lobby {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    #rooms > div {
+      display: block;
+    }
+
+    .room-name {
+      display: inline-block;
+    }
+  </style>
 </head>
 
 <body>
@@ -10,19 +24,41 @@
 
       <h1 id="pageTitle">Lobby (Authenticated)</h1>
 
-      <ul>
+      <!-- <ul>
         <li><a href="/games/42">Game with ID 42</a></li>
         <li><a href="/lobby">Lobby</a></li>
         <li><a href="/profile">Profile</a></li>
         <li><a href="/log-out">Log-Out</a></li>
-      </ul>
+      </ul> -->
 
-      <div id="chat-container">
-        <div id="messages"></div>
-        <label>
-          <input id="chatMessage" name="chat-message" placeholder="Message..." />
-        </label>
+      <div id="lobby">
+        <div id="games">
+          <div id="createGameButton">
+            <input type="submit" value="Create Game" />
+          </div>
+          <div id="rooms">
+            <div>
+              <span class="room-name">Room Name 1</span>
+              <button>JOIN</button>
+            </div>
+            <div>
+              <p class="room-name">Room Name 2</p>
+              <button>JOIN</button>
+            </div>
+            <!-- <h2>Room Name 2</h2>
+            <button>JOIN</button>
+            <h2>Room Name 3</h2>
+            <button>JOIN</button> -->
+          </div>
+        </div>
+        <div id="chat-container">
+          <div id="messages"></div>
+          <label>
+            <input id="chatMessage" name="chat-message" placeholder="Message..." />
+          </label>
+        </div>
       </div>
+      
   </div>
   <%- include('./partials/footer'); %>
     <script src="/socket.io/socket.io.js"></script>
