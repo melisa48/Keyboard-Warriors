@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcrypt");
 const Users = require("../../db/users");
+const registerValidator = require("../../middleware/validation.js");
 
 const router = express.Router();
 
@@ -12,9 +13,8 @@ router.get("/sign-up", (request, response) => {
   });
 });
 
-router.post("/sign-up", async (request, response) => {
+router.post("/sign-up", registerValidator, async (request, response) => {
   const { full_name, username, email, password } = request.body;
-
   // encrypt the plaintext password
   const hash = await bcrypt.hash(password, SALT_ROUNDS);
 
@@ -81,7 +81,8 @@ router.post("/log-in", async (request, response) => {
       title: "Term Project (Log-In)",
       requestEmail,
       requestPassword,
-      message: "Error!",
+      message:
+        "Invalid login credentials. Please enter a correct email and password",
     });
   }
 });

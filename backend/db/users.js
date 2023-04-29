@@ -7,9 +7,19 @@ const create = (full_name, username, email, password) =>
   );
 
 const findByEmail = (email) =>
-  db.one("SELECT * FROM users WHERE email=$1", [email]);
+  db.oneOrNone("SELECT * FROM users WHERE email=$1", [email]);
+
+const usernameDoesExist = (username) => {
+  return db.oneOrNone("SELECT * FROM users WHERE username=$1", [username]);
+};
+
+const emailDoesExist = (email) => {
+  return db.oneOrNone("SELECT * FROM users WHERE email=$1", [email]);
+};
 
 module.exports = {
   create,
   findByEmail,
+  usernameDoesExist,
+  emailDoesExist,
 };
