@@ -7,7 +7,9 @@ const {
   lobbyRoutes,
   profileRoutes,
   authenticationRoutes,
+  logOutRoutes,
   chatRoutes,
+  apiGameRoutes,
 } = require("./routes/index");
 const canonicalTilesRoute = require("./routes/testing/canonical_tiles");
 const boardRoute = require("./routes/testing/board");
@@ -18,6 +20,7 @@ const session = require("express-session");
 const pgSession = require("connect-pg-simple")(session);
 const db = require("./db/connection");
 const requireAuthentication = require("./middleware/require-authentication");
+const requireSignedOut = require("./middleware/require-signed-out");
 const initSockets = require("./sockets/initialize");
 
 const app = express();
@@ -55,14 +58,16 @@ const sessionMiddleware = session({
 app.use(sessionMiddleware);
 const server = initSockets(app, sessionMiddleware);
 
-app.use("/", homeRoutes);
 app.use("/games", requireAuthentication, gameRoutes);
 app.use("/lobby", requireAuthentication, lobbyRoutes);
 app.use("/profile", requireAuthentication, profileRoutes);
-app.use("/authentication", authenticationRoutes);
-app.use("/chat", chatRoutes);
+app.use("/authentication", requireSignedOut, authenticationRoutes);
+app.use("/log-out", requireAuthentication, logOutRoutes);
+app.use("/chat", requireAuthentication, chatRoutes);
 app.use("/canonical-tiles", canonicalTilesRoute);
 app.use("/board", boardRoute);
+app.use("/api/games", requireAuthentication, apiGameRoutes);
+app.use("/", requireSignedOut, homeRoutes);
 
 server.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);

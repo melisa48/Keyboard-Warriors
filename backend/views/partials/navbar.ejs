@@ -1,0 +1,15 @@
+<link rel="stylesheet" href="/stylesheets/navbar.css" type="text/css">
+
+<div id="navbar">
+  <div id="logo"><img src="/images/scrabble-logo.png"></div>
+  <div id="gameTitle">SCRABBLE</div>
+  <div id="accountDropdown">
+    <% if (state === "log-in") { %>
+      <a href="/authentication/sign-up">Sign-Up</a>
+    <% } else if (state === "sign-up") { %>
+      <a href="/authentication/log-in">Log-In</a>
+    <% } else { %>
+      <%= state %>
+    <% } %>
+  </div>
+</div>

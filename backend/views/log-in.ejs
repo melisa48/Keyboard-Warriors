@@ -1,34 +1,39 @@
 <html>
   <head>
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/stylesheets/home.css" type="text/css">
+    <%- include('./partials/header', {title: title}); %>
   </head>
   <body>
-    <p>Log-In (Unauthenticated)</p>
+    <div id="content-wrap">
+      <%- include('./partials/navbar', {state: "log-in"}); %>
 
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="/games/42">Game with ID 42</a></li>
-      <li><a href="/lobby">Lobby</a></li>
-      <li><a href="/profile">Profile</a></li>
-      <li><a href="/authentication/sign-up">Sign-Up</a></li>
-    </ul>
-
-    <form action="/authentication/log-in" method="post">
-      <label>
-        <em>Email</em>
-        <input name="email" type="email" placeholder="Email" autocomplete="email" required />
-      </label>
-      <label>
-        <em>Password</em>
-        <input name="password" type="password" autocomplete="current-password" required />
-      </label>
-      <% if(locals.message){ %>
-      <span class="form-fail"> <%=message %></span>
-      <% } %>
-      <input type="submit" value="Log In" />
-    </form>
-
-    <script src="/scripts/bundle.js"></script>
+      <h1 id="pageTitle">Log-In (Unauthenticated)</h1>
+      
+      <div id="formHolder">
+        <form action="/authentication/log-in" method="post">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            placeholder="Email"
+            autocomplete="email"
+            required />
+          
+          <label for="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password"
+            required />
+          
+          <div id="buttonHolder">
+            <input type="submit" value="Log In" />
+          </div>
+        </form>
+      </div>
+    </div>
+    <%- include('./partials/footer'); %>
   </body>
 </html>

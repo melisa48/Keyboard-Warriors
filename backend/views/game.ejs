@@ -1,21 +1,16 @@
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/stylesheets/home.css" type="text/css">
-  </head>
-  <body>
-    <p>Game <%= gameID %> (Authenticated)</p>
-    
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="/games/42">Game with ID 42</a></li>
-      <li><a href="/lobby">Lobby</a></li>
-      <li><a href="/profile">Profile</a></li>
-      <li><a href="/authentication/log-out">Log-Out</a></li>
-    </ul>
 
-    <p>You are: <%= username %> <%= email %> (<%= id %>)</p>
+<head>
+  <%- include('./partials/header', {title: title}); %>
+</head>
 
-    <script src="/scripts/bundle.js"></script>
-  </body>
+<body>
+  <div id="content-wrap">
+    <%- include('./partials/navbar', {state: username}); %>
+
+      <h1 id="pageTitle">Game <%= gameID %></h1>
+  </div>
+  <%- include('./partials/footer'); %>
+</body>
+
 </html>

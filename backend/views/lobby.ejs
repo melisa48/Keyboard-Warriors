@@ -1,27 +1,44 @@
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/stylesheets/home.css" type="text/css">
-  </head>
-  <body>
-    <p>Lobby (Authenticated)</p>
 
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="/games/42">Game with ID 42</a></li>
-      <li><a href="/lobby">Lobby</a></li>
-      <li><a href="/profile">Profile</a></li>
-      <li><a href="/authentication/log-out">Log-Out</a></li>
-    </ul>
+<head>
+  <%- include('./partials/header', {title: title}); %>
+  <style>
+    #lobby {
+      display: flex;
+      justify-content: space-around;
+    }
+  </style>
+</head>
 
-    <div id="chat-container">
-      <div id="messages"></div>
-      <label>
-        <input id="chatMessage" name="chat-message" placeholder="Message..." />
-      </label>
-    </div>
+<body>
+  <div id="content-wrap">
+    <%- include('./partials/navbar', {state: username}); %>
+      <h1 id="pageTitle">Lobby (Authenticated)</h1>
 
-    <script src="/scripts/bundle.js"></script>
+      <div id="lobby">
+        <div id="games-container">
+          <button onclick="window.location.href='/games/create-game'">Create Game</button>
+          <ul id="games-list">
+            <% for(let i = 0; i < games.length; i++) { %>
+            <li>
+              <span class="game-title"><%= games[i].title %></span>
+              <button onclick="window.location.href='/api/games/<%= games[i].id %>/join'">Join</button>
+            </li>
+            <% } %>
+          </ul>
+        </div>
+        <%- include('partials/chat.ejs') %>
+      </div>
+      
+  </div>
+  <template id="available-game-item">
+    <li>
+      <span class="game-title"></span>
+      <button onclick="">Join</button>
+    </li>
+  </template>
+  <%- include('./partials/footer'); %>
     <script src="/socket.io/socket.io.js"></script>
-  </body>
+</body>
+
 </html>

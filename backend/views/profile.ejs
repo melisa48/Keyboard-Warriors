@@ -1,19 +1,53 @@
 <html>
   <head>
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/stylesheets/home.css" type="text/css">
+    <%- include('./partials/header', {title: title}); %>
+    <style>
+      #profilePicture {
+        text-align: center;
+        margin-bottom: 10px;
+      }
+    </style>
   </head>
   <body>
-    <p>Profile (Authenticated)</p>
+    <div id="content-wrap">
+      <%- include('./partials/navbar', {state: username}); %>
 
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="/games/42">Game with ID 42</a></li>
-      <li><a href="/lobby">Lobby</a></li>
-      <li><a href="/profile">Profile</a></li>
-      <li><a href="/authentication/log-out">Log-Out</a></li>
-    </ul>
+      <h1 id="pageTitle">Profile (Authenticated)</h1>
 
-    <script src="/scripts/bundle.js"></script>
+      <div id="formHolder">
+        <form action="/profile" method="post">
+          <div id="profilePicture">Profile Picture</div>
+
+          <label for="full_name">Full Name</label>
+          <input
+            id="full_name"
+            name="full_name"
+            type="text"
+            placeholder="Full Name"
+            autocomplete="full_name" />
+
+          <label for="username">Username</label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            placeholder="Username"
+            autocomplete="username" />
+          
+          <label for="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password" />
+          
+          <div id="buttonHolder">
+            <input type="submit" value="Save Changes" />
+          </div>
+        </form>
+      </div>
+    </div>
+    <%- include('./partials/footer'); %>
   </body>
 </html>
