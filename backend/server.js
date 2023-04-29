@@ -9,6 +9,7 @@ const {
   authenticationRoutes,
   logOutRoutes,
   chatRoutes,
+  apiGameRoutes,
 } = require("./routes/index");
 const canonicalTilesRoute = require("./routes/testing/canonical_tiles");
 const boardRoute = require("./routes/testing/board");
@@ -65,6 +66,7 @@ app.use("/log-out", requireAuthentication, logOutRoutes);
 app.use("/chat", requireAuthentication, chatRoutes);
 app.use("/canonical-tiles", canonicalTilesRoute);
 app.use("/board", boardRoute);
+app.use("/api/games", requireAuthentication, apiGameRoutes);
 app.use("/", requireSignedOut, homeRoutes);
 
 server.listen(PORT, () => {
