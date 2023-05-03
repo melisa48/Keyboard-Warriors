@@ -19,6 +19,8 @@ const GAME_TITLE_SQL = `SELECT title FROM games WHERE id=$1`;
 const PLAYERS_IN_GAME_SQL = `SELECT u.username FROM users u WHERE u.id IN 
   (SELECT gu.user_id FROM game_users gu WHERE gu.game_id = $1)`;
 
+const GAME_BOARD = `SELECT * FROM board;`;
+
 const list = async (user_id) => db.any(GAMES_LIST_SQL, [user_id]);
 
 const create = async (user_id, game_title, number_of_players) => {
@@ -53,4 +55,9 @@ const information = async (game_id) => {
   return { game_title, players };
 };
 
-module.exports = { list, create, join, information };
+const board = async () => {
+  const board_layout = await db.any(GAME_BOARD);
+  return { board_layout };
+};
+
+module.exports = { list, create, join, information, board };

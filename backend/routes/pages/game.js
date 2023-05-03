@@ -33,12 +33,16 @@ router.get("/:id/waiting-room", async (request, response) => {
   });
 });
 
-router.get("/:id", (request, response) => {
+router.get("/:id", async (request, response) => {
   const id = request.params.id;
+  const b_layout = await Games.board();
+  let board_obj = b_layout.board_layout;
 
+  // console.log(b_layout[0]);
   response.render("game", {
     title: "Term Project (Game)",
     gameID: id,
+    board_obj,
     ...request.session.user,
   });
 });
