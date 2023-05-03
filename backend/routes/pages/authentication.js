@@ -81,8 +81,7 @@ router.post("/log-in", async (request, response) => {
       title: "Term Project (Log-In)",
       requestEmail,
       requestPassword,
-      message:
-        "Invalid login credentials. Please enter a correct email and password",
+      message: "Invalid login credentials.",
     });
   }
 });

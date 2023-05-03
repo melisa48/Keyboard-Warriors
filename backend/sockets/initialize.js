@@ -9,6 +9,7 @@ const initSockets = (app, sessionMiddleware) => {
 
   io.on("connection", (socket) => {
     console.log("Connection");
+    socket.join(socket.handshake.query.roomName);
   });
 
   app.set("io", io);
