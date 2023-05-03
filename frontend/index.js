@@ -1,8 +1,13 @@
 import io from "socket.io-client";
 import events from "../backend/sockets/constants";
 import { gameCreatedHandler } from "./games/created";
-
-const socket = io();
+import { getGameId } from "./games/get-game-id";
+const game_id = getGameId(document.location.pathname);
+const socket = io({
+  query: {
+    roomName: game_id,
+  },
+});
 
 gameCreatedHandler(socket);
 
@@ -35,7 +40,7 @@ document
     const message = event.target.value;
     event.target.value = "";
 
-    fetch("/chat/0", {
+    fetch(`/chat/${game_id}`, {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message }),

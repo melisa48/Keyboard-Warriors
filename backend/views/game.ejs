@@ -36,6 +36,7 @@
   <div id="content-wrap">
     <%- include('./partials/navbar', {state: username}); %>
       <h1 id="pageTitle">Game <%= gameID %></h1>
+      <%- include('partials/chat.ejs') %>
   </div>
   <div class="boardParent" style="width: 50%">
     <div class="board">

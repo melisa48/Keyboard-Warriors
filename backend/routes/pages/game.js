@@ -1,5 +1,6 @@
 const express = require("express");
 const Games = require("../../db/games");
+const Chat = require("../../db/chat");
 
 const router = express.Router();
 
@@ -35,14 +36,18 @@ router.get("/:id/waiting-room", async (request, response) => {
 
 router.get("/:id", async (request, response) => {
   const id = request.params.id;
+
   const b_layout = await Games.board();
   let board_obj = b_layout.board_layout;
+
+  const chat = await Chat.getMessages(id);
 
   // console.log(b_layout[0]);
   response.render("game", {
     title: "Term Project (Game)",
     gameID: id,
     board_obj,
+    messages: chat,
     ...request.session.user,
   });
 });

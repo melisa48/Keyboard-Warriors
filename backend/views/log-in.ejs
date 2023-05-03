@@ -27,7 +27,10 @@
             placeholder="Password"
             autocomplete="current-password"
             required />
-          
+
+          <% if(locals.message){ %>
+            <span class="form-fail"> <%=message %></span>
+          <% } %>
           <div id="buttonHolder">
             <input type="submit" value="Log In" />
           </div>
