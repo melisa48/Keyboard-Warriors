@@ -1,5 +1,13 @@
 <div id="chat-container">
-  <div id="messages"></div>
+  <div id="messages">
+    <% for(let i = 0; i < messages.length; i++) { %>
+      <div>
+        <span><%= messages[i].username %></span>
+        <span><%= messages[i].message %></span>
+        <span><%= messages[i].created_at %></span>
+      </div>
+    <% } %>
+  </div>
   <label>
     <input id="chatMessage" name="chat-message" placeholder="Message..." />
   </label>

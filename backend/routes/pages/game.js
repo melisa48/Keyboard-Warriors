@@ -1,5 +1,6 @@
 const express = require("express");
 const Games = require("../../db/games");
+const Chat = require("../../db/chat");
 
 const router = express.Router();
 
@@ -33,12 +34,14 @@ router.get("/:id/waiting-room", async (request, response) => {
   });
 });
 
-router.get("/:id", (request, response) => {
+router.get("/:id", async (request, response) => {
   const id = request.params.id;
+  const chat = await Chat.getMessages(id);
 
   response.render("game", {
     title: "Term Project (Game)",
     gameID: id,
+    messages: chat,
     ...request.session.user,
   });
 });
