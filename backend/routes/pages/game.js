@@ -13,7 +13,7 @@ router.get("/create-game", (request, response) => {
   });
 });
 
-router.get("/:id/start-game", (request, response) => {
+router.get("/:id/start-game", requireToBeInGame, (request, response) => {
   const { id: game_id } = request.params;
 
   // TODO: update started_at field in games table
@@ -21,21 +21,25 @@ router.get("/:id/start-game", (request, response) => {
   response.redirect(`/games/${game_id}`);
 });
 
-router.get("/:id/waiting-room", async (request, response) => {
-  const { id: game_id } = request.params;
+router.get(
+  "/:id/waiting-room",
+  requireToBeInGame,
+  async (request, response) => {
+    const { id: game_id } = request.params;
 
-  const { game_title, players: playersInGame } = await Games.information(
-    game_id
-  );
+    const { game_title, players: playersInGame } = await Games.information(
+      game_id
+    );
 
-  response.render("waiting-room", {
-    title: "Waiting Room",
-    gameTitle: game_title,
-    gameID: game_id,
-    players: playersInGame,
-    ...request.session.user,
-  });
-});
+    response.render("waiting-room", {
+      title: "Waiting Room",
+      gameTitle: game_title,
+      gameID: game_id,
+      players: playersInGame,
+      ...request.session.user,
+    });
+  }
+);
 
 router.get("/:id", requireToBeInGame, async (request, response) => {
   const id = request.params.id;

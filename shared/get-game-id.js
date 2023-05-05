@@ -1,9 +1,8 @@
 function getGameId(location) {
-  location = location.replace(/\/$/, "");
+  const regex = /\/(\d+)(\/|$)/;
+  const match = regex.exec(location);
 
-  const gameId = location.substring(location.lastIndexOf("/") + 1);
-
-  return gameId === "lobby" ? 0 : parseInt(gameId);
+  return match ? parseInt(match[1], 10) : "lobby";
 }
 
 module.exports = getGameId;
