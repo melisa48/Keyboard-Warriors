@@ -7,6 +7,7 @@ const router = express.Router();
 router.get("/create-game", (request, response) => {
   response.render("create-game", {
     title: "Create Game",
+    ...request.session.user,
   });
 });
 

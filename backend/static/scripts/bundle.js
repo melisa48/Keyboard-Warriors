@@ -277,23 +277,23 @@
           "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_".split(
             ""
           ),
-        T = 64,
-        C = {};
-      let O,
+        O = 64,
+        T = {};
+      let C,
         R = 0,
         S = 0;
       function x(t) {
         let e = "";
         do {
-          (e = A[t % T] + e), (t = Math.floor(t / T));
+          (e = A[t % O] + e), (t = Math.floor(t / O));
         } while (t > 0);
         return e;
       }
       function B() {
         const t = x(+new Date());
-        return t !== O ? ((R = 0), (O = t)) : t + "." + x(R++);
+        return t !== C ? ((R = 0), (C = t)) : t + "." + x(R++);
       }
-      for (; S < T; S++) C[A[S]] = S;
+      for (; S < O; S++) T[A[S]] = S;
       function N(t) {
         let e = "";
         for (let s in t)
@@ -323,8 +323,8 @@
           } catch (t) {}
       }
       function j() {}
-      const D = null != new P({ xdomain: !1 }).responseType;
-      class I extends g {
+      const I = null != new P({ xdomain: !1 }).responseType;
+      class D extends g {
         constructor(t, e) {
           super(),
             k(this, e),
@@ -388,7 +388,7 @@
             }, 0);
           }
           "undefined" != typeof document &&
-            ((this.index = I.requestsCount++), (I.requests[this.index] = this));
+            ((this.index = D.requestsCount++), (D.requests[this.index] = this));
         }
         onError(t) {
           this.emitReserved("error", t, this.xhr), this.cleanup(!0);
@@ -399,7 +399,7 @@
               try {
                 this.xhr.abort();
               } catch (t) {}
-            "undefined" != typeof document && delete I.requests[this.index],
+            "undefined" != typeof document && delete D.requests[this.index],
               (this.xhr = null);
           }
         }
@@ -415,11 +415,11 @@
         }
       }
       function M() {
-        for (let t in I.requests)
-          I.requests.hasOwnProperty(t) && I.requests[t].abort();
+        for (let t in D.requests)
+          D.requests.hasOwnProperty(t) && D.requests[t].abort();
       }
-      (I.requestsCount = 0),
-        (I.requests = {}),
+      (D.requestsCount = 0),
+        (D.requests = {}),
         "undefined" != typeof document &&
           ("function" == typeof attachEvent
             ? attachEvent("onunload", M)
@@ -552,7 +552,7 @@
                   (this.xs = t.secure !== e);
               }
               const e = t && t.forceBase64;
-              this.supportsBinary = D && !e;
+              this.supportsBinary = I && !e;
             }
             get name() {
               return "polling";
@@ -660,7 +660,7 @@
             request(t = {}) {
               return (
                 Object.assign(t, { xd: this.xd, xs: this.xs }, this.opts),
-                new I(this.uri(), t)
+                new D(this.uri(), t)
               );
             }
             doWrite(t, e) {
@@ -2011,7 +2011,11 @@
         vt = s(906);
       const _t = document.querySelector("#games-list"),
         kt = document.querySelector("#available-game-item"),
-        wt = gt();
+        wt = (function (t) {
+          const e = t.substring(t.lastIndexOf("/") + 1);
+          return "lobby" === e ? 0 : parseInt(e);
+        })(document.location.pathname),
+        Et = gt({ query: { roomName: wt } });
       !(function (t) {
         t.on(vt.GAME_CREATED, ({ game_id: t, game_title: e }) => {
           _t.appendChild(
@@ -2030,9 +2034,9 @@
             })(t, e)
           );
         });
-      })(wt);
-      const Et = document.querySelector("#messages");
-      wt.on(
+      })(Et);
+      const At = document.querySelector("#messages");
+      Et.on(
         bt().CHAT_MESSAGE_RECEIVED,
         ({ username: t, message: e, timestamp: s }) => {
           const n = document.createElement("div"),
@@ -2041,7 +2045,7 @@
           const r = document.createElement("span");
           r.innerText = e + " ";
           const o = document.createElement("span");
-          (o.innerText = s), n.append(i, r, o), Et.appendChild(n);
+          (o.innerText = s), n.append(i, r, o), At.appendChild(n);
         }
       ),
         document
@@ -2050,7 +2054,7 @@
             if (13 !== t.keyCode) return;
             const e = t.target.value;
             (t.target.value = ""),
-              fetch("/chat/0", {
+              fetch(`/chat/${wt}`, {
                 method: "post",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ message: e }),

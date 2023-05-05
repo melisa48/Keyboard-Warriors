@@ -12,24 +12,24 @@
 
 <body>
   <div id="content-wrap">
-    <%- include('./partials/navbar', {state: username}); %>
-      <h1 id="pageTitle">Lobby (Authenticated)</h1>
+    <%- include('./partials/navbars/authenticated_navbar', {username: username}); %>
+    
+    <h1 id="pageTitle">Lobby (Authenticated)</h1>
 
-      <div id="lobby">
-        <div id="games-container">
-          <button onclick="window.location.href='/games/create-game'">Create Game</button>
-          <ul id="games-list">
-            <% for(let i = 0; i < games.length; i++) { %>
-            <li>
-              <span class="game-title"><%= games[i].title %></span>
-              <button onclick="window.location.href='/api/games/<%= games[i].id %>/join'">Join</button>
-            </li>
-            <% } %>
-          </ul>
-        </div>
-        <%- include('partials/chat.ejs') %>
+    <div id="lobby">
+      <div id="games-container">
+        <button onclick="window.location.href='/games/create-game'">Create Game</button>
+        <ul id="games-list">
+          <% for(let i = 0; i < games.length; i++) { %>
+          <li>
+            <span class="game-title"><%= games[i].title %></span>
+            <button onclick="window.location.href='/api/games/<%= games[i].id %>/join'">Join</button>
+          </li>
+          <% } %>
+        </ul>
       </div>
-      
+      <%- include('partials/chat.ejs') %>
+    </div>
   </div>
   <template id="available-game-item">
     <li>
