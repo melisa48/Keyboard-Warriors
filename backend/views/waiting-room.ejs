@@ -10,7 +10,7 @@
   </head>
   <body>
     <div id="content-wrap">
-      <%- include('./partials/navbar', {state: username}); %>
+      <%- include('./partials/navbars/authenticated_navbar', {username: username}); %>
 
       <h1 id="pageTitle"><%= gameTitle %></h1>
 

@@ -9,7 +9,7 @@
   </head>
   <body>
     <div id="content-wrap">
-      <%- include('./partials/navbar', {state: "log-in"}); %>
+      <%- include('./partials/navbars/authenticated_navbar', {username: username}); %>
 
       <h1 id="pageTitle">Create Game</h1>
 

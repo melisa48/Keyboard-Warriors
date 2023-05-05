@@ -245,7 +245,6 @@ async function run() {
     });
     await client.connect();
     let { rows } = await client.query(query);
-    console.log(rows);
   } catch (e) {
     console.error(e);
   } finally {

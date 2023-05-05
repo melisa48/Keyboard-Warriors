@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 import events from "../backend/sockets/constants";
 import { gameCreatedHandler } from "./games/created";
-import { getGameId } from "./games/get-game-id";
+import { getGameId } from "../shared/get-game-id";
 const game_id = getGameId(document.location.pathname);
 const socket = io({
   query: {
