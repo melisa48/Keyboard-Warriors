@@ -3,10 +3,16 @@
 <head>
   <%- include('./partials/header', {title: title}); %>
   <style>
+    #game-page {
+      display: flex;
+      justify-content: space-around;
+    }
+
     .boardParent {
       display: flex;
       justify-content: center;
       align-items: center;
+      margin-bottom: 5rem;
     }
 
 		.board {
@@ -37,27 +43,29 @@
     <%- include('./partials/navbars/authenticated_navbar', {username: username}); %>
     
     <h1 id="pageTitle">Game <%= gameID %></h1>
-    <%- include('partials/chat.ejs') %>
-    <div class="boardParent" style="width: 50%">
-      <div class="board">
-        <% counter = 0 %>
-        <% for (let i = 0; i < 15; i++) { %>
-          <% for (let j = 0; j < 15; j++) { %>
-            <% if (board_obj[counter].letter_multiplier === 2){%>
-              <div class="square" style="background-color:lightblue"><%= board_obj[counter].x %>, <%= board_obj[counter].y %></div>
-            <% } else if (board_obj[counter].letter_multiplier === 3){ %>
-              <div class="square" style="background-color:teal;"><%= board_obj[counter].x %>, <%= board_obj[counter].y %></div>
-            <% } else if (board_obj[counter].word_multiplier === 2) {%>
-              <div class="square" style="background-color: pink;"><%= board_obj[counter].x %>, <%= board_obj[counter].y %></div>
-            <% } else if (board_obj[counter].word_multiplier === 3) {%>
-              <div class="square" style="background-color: red;"><%= board_obj[counter].x %>, <%= board_obj[counter].y %></div>
-            <% } else {%>
-              <div class="square"><%= board_obj[counter].x %>, <%= board_obj[counter].y %></div>
+    <div id="game-page">
+      <div class="boardParent" style="width: 50%">
+        <div class="board">
+          <% counter = 0 %>
+          <% for (let i = 0; i < 15; i++) { %>
+            <% for (let j = 0; j < 15; j++) { %>
+              <% if (board_obj[counter].letter_multiplier === 2){%>
+                <div class="square" style="background-color:lightblue"><%= board_obj[counter].x %>, <%= board_obj[counter].y %></div>
+              <% } else if (board_obj[counter].letter_multiplier === 3){ %>
+                <div class="square" style="background-color:teal;"><%= board_obj[counter].x %>, <%= board_obj[counter].y %></div>
+              <% } else if (board_obj[counter].word_multiplier === 2) {%>
+                <div class="square" style="background-color: pink;"><%= board_obj[counter].x %>, <%= board_obj[counter].y %></div>
+              <% } else if (board_obj[counter].word_multiplier === 3) {%>
+                <div class="square" style="background-color: red;"><%= board_obj[counter].x %>, <%= board_obj[counter].y %></div>
+              <% } else {%>
+                <div class="square"><%= board_obj[counter].x %>, <%= board_obj[counter].y %></div>
+              <% } %>
+              <% counter++%>
             <% } %>
-            <% counter++%>
           <% } %>
-        <% } %>
+        </div>
       </div>
+      <%- include('partials/chat.ejs') %>
     </div>
   </div>
   <div>
