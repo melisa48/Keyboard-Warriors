@@ -19,9 +19,23 @@ const GAME_TITLE_SQL = `SELECT title FROM games WHERE id=$1`;
 const PLAYERS_IN_GAME_SQL = `SELECT u.username FROM users u WHERE u.id IN 
   (SELECT gu.user_id FROM game_users gu WHERE gu.game_id = $1)`;
 
+const GAMES_USER_IS_IN_SQL = `SELECT gu.game_id, g.title FROM game_users gu, games g
+  WHERE gu.game_id = g.id AND gu.user_id=$1`;
+
+const CHECK_USER_IN_GAME_SQL = `SELECT EXISTS(SELECT 1 FROM game_users gu WHERE user_id=$1 AND game_id=$2)`;
+
 const GAME_BOARD = `SELECT * FROM board;`;
 
 const list = async (user_id) => db.any(GAMES_LIST_SQL, [user_id]);
+
+const games_user_is_in = async (user_id) => {
+  return db.any(GAMES_USER_IS_IN_SQL, [user_id]);
+};
+
+const check_user_in_game = async (user_id, game_id) => {
+  const result = await db.oneOrNone(CHECK_USER_IN_GAME_SQL, [user_id, game_id]);
+  return result.exists;
+};
 
 const create = async (user_id, game_title, number_of_players) => {
   const { id: game_id } = await db.one(CREATE_GAME_SQL, [
@@ -60,4 +74,12 @@ const board = async () => {
   return { board_layout };
 };
 
-module.exports = { list, create, join, information, board };
+module.exports = {
+  list,
+  create,
+  join,
+  information,
+  board,
+  games_user_is_in,
+  check_user_in_game,
+};

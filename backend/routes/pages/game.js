@@ -2,6 +2,8 @@ const express = require("express");
 const Games = require("../../db/games");
 const Chat = require("../../db/chat");
 
+const requireToBeInGame = require("../../middleware/require-to-be-in-game");
+
 const router = express.Router();
 
 router.get("/create-game", (request, response) => {
@@ -35,7 +37,7 @@ router.get("/:id/waiting-room", async (request, response) => {
   });
 });
 
-router.get("/:id", async (request, response) => {
+router.get("/:id", requireToBeInGame, async (request, response) => {
   const id = request.params.id;
 
   const b_layout = await Games.board();
@@ -43,7 +45,6 @@ router.get("/:id", async (request, response) => {
 
   const chat = await Chat.getMessages(id);
 
-  // console.log(b_layout[0]);
   response.render("game", {
     title: "Term Project (Game)",
     gameID: id,

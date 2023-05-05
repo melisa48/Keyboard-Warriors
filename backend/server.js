@@ -61,12 +61,12 @@ const server = initSockets(app, sessionMiddleware);
 app.use("/games", requireAuthentication, gameRoutes);
 app.use("/lobby", requireAuthentication, lobbyRoutes);
 app.use("/profile", requireAuthentication, profileRoutes);
-app.use("/authentication", requireSignedOut, authenticationRoutes);
 app.use("/log-out", requireAuthentication, logOutRoutes);
 app.use("/chat", requireAuthentication, chatRoutes);
 app.use("/canonical-tiles", canonicalTilesRoute);
 app.use("/board", boardRoute);
 app.use("/api/games", requireAuthentication, apiGameRoutes);
+app.use("/authentication", requireSignedOut, authenticationRoutes);
 app.use("/", requireSignedOut, homeRoutes);
 
 server.listen(PORT, () => {
