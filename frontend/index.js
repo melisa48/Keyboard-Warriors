@@ -3,10 +3,15 @@ import events from "../backend/sockets/constants";
 import { gameCreatedHandler } from "./games/created";
 import getGameId from "../shared/get-game-id";
 const game_id = getGameId(document.location.pathname);
+const user_id = document.querySelector("#user").dataset.userId;
 const socket = io({
   query: {
-    roomName: game_id,
+    roomID: game_id,
   },
+});
+
+socket.on("connect", () => {
+  console.log("Connected with id: " + socket.id);
 });
 
 gameCreatedHandler(socket);
@@ -28,6 +33,35 @@ socket.on(events.CHAT_MESSAGE_RECEIVED, ({ username, message, timestamp }) => {
   entry.append(displayName, displayMessage, displayTimestamp);
 
   messageContainer.appendChild(entry);
+});
+
+// game buttons
+const gameButtonsContainer = document.querySelector("#gameButtons");
+const gameButtons = gameButtonsContainer.querySelectorAll("button");
+
+gameButtons.forEach((button) => {
+  button.addEventListener("click", async () => {
+    await fetch(`/api/games/${game_id}/submit-word`, {
+      method: "post",
+    }).catch((error) => {
+      console.log(error);
+    });
+  });
+});
+
+socket.on("current-player", (currentPlayer) => {
+  console.log(currentPlayer);
+
+  // disable game buttons if the user isn't the current player, enable them if they are
+  if (currentPlayer.user_id == user_id) {
+    gameButtons.forEach((button) => {
+      button.disabled = false;
+    });
+  } else {
+    gameButtons.forEach((button) => {
+      button.disabled = true;
+    });
+  }
 });
 
 document

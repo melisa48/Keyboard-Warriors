@@ -13,10 +13,47 @@ router.get("/create-game", (request, response) => {
   });
 });
 
-router.get("/:id/start-game", requireToBeInGame, (request, response) => {
+router.get("/:id/start-game", requireToBeInGame, async (request, response) => {
   const { id: game_id } = request.params;
 
+  // TODO: check if game is already started, if it has, redirect to game page
+
   // TODO: update started_at field in games table
+
+  // get array of canonical tiles
+  const canonicalTiles = await Games.getCanonicalTiles();
+  console.log(canonicalTiles);
+  // get each player in the game and their ids
+  const information = await Games.information(game_id);
+  const players = information.players;
+  console.log(players);
+
+  // assign each 5 random canonical tiles, and insert into game_tiles
+  for (let i = 0; i < players.length; i++) {
+    for (let j = 0; j < 5; j++) {
+      const randomIndexInCanonicalTiles = Math.floor(
+        Math.random() * canonicalTiles.length
+      );
+      const randomCanonicalTile = canonicalTiles.splice(
+        randomIndexInCanonicalTiles,
+        1
+      )[0];
+
+      // insert into game_tiles
+      await Games.insertIntoGameTiles(
+        game_id,
+        players[i].id,
+        randomCanonicalTile.id,
+        j,
+        0
+      );
+    }
+  }
+
+  // insert the remaining canonical tiles into game_tiles (in the bag, which has user_id of -1)
+  for (let i = 0; i < canonicalTiles.length; i++) {
+    await Games.insertIntoGameTiles(game_id, -1, canonicalTiles[i].id, -1, -1);
+  }
 
   response.redirect(`/games/${game_id}`);
 });
@@ -44,16 +81,30 @@ router.get(
 router.get("/:id", requireToBeInGame, async (request, response) => {
   const id = request.params.id;
 
-  const b_layout = await Games.board();
-  let board_obj = b_layout.board_layout;
-
+  const board = await Games.getBoard();
   const chat = await Chat.getMessages(id);
+  const gameTiles = await Games.getGameTiles(id);
+
+  console.log(request.session.user);
+
+  let playerTiles = [];
+  for (let i = 0; i < gameTiles.length; i++) {
+    if (gameTiles[i].user_id === request.session.user.id) {
+      playerTiles.push(gameTiles[i]);
+    }
+  }
+
+  // get the player's tiles
+  // console.log(gameTiles);
+
+  // TODO: tiles on the board
 
   response.render("game", {
     title: "Term Project (Game)",
     gameID: id,
-    board_obj,
+    board,
     messages: chat,
+    playerTiles: playerTiles,
     ...request.session.user,
   });
 });

@@ -10,9 +10,9 @@
   </head>
   <body>
     <div id="content-wrap">
-      <%- include('./partials/navbars/authenticated_navbar', {username: username}); %>
+      <%- include('./partials/navbars/authenticated_navbar', {username: username, id: id}); %>
 
-      <h1 id="pageTitle">Profile (Authenticated)</h1>
+      <h1 class="page-title">Profile (Authenticated)</h1>
 
       <div id="formHolder">
         <form action="/profile" method="post">

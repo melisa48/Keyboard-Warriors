@@ -12,9 +12,9 @@
 
 <body>
   <div id="content-wrap">
-    <%- include('./partials/navbars/authenticated_navbar', {username: username}); %>
+    <%- include('./partials/navbars/authenticated_navbar', {username: username, id: id}); %>
     
-    <h1 id="pageTitle">Lobby (Authenticated)</h1>
+    <h1 class="page-title">Lobby (Authenticated)</h1>
 
     <div id="lobby">
       <div id="user-in-games">
@@ -50,7 +50,7 @@
     </li>
   </template>
   <%- include('./partials/footer'); %>
-    <script src="/socket.io/socket.io.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
 </body>
 
 </html>

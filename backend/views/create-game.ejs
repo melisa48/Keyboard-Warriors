@@ -9,9 +9,9 @@
   </head>
   <body>
     <div id="content-wrap">
-      <%- include('./partials/navbars/authenticated_navbar', {username: username}); %>
+      <%- include('./partials/navbars/authenticated_navbar', {username: username, id: id}); %>
 
-      <h1 id="pageTitle">Create Game</h1>
+      <h1 class="page-title">Create Game</h1>
 
       <div id="formHolder">
         <form action="/api/games/create" method="post">

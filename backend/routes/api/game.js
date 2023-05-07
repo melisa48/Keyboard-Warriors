@@ -55,4 +55,22 @@ router.get("/:id/join", async (request, response) => {
   }
 });
 
+router.post("/:id/submit-word", async (request, response) => {
+  // TODO: check if the player can make a turn
+
+  const { id: game_id } = request.params;
+  const io = request.app.get("io");
+
+  try {
+    // get and set new current player & emit to room
+    const newCurrentPlayer = await Games.setAndGetNewCurrentPlayer(game_id);
+    io.sockets.in(game_id).emit("current-player", newCurrentPlayer);
+
+    response.status(200);
+  } catch (error) {
+    console.log(error);
+    response.status(500);
+  }
+});
+
 module.exports = router;

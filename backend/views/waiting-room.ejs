@@ -10,9 +10,9 @@
   </head>
   <body>
     <div id="content-wrap">
-      <%- include('./partials/navbars/authenticated_navbar', {username: username}); %>
+      <%- include('./partials/navbars/authenticated_navbar', {username: username, id: id}); %>
 
-      <h1 id="pageTitle"><%= gameTitle %></h1>
+      <h1 class="page-title"><%= gameTitle %></h1>
 
       <div style="text-align: center;">
         <ul id="players-list">

@@ -71,7 +71,7 @@ body {
   padding-bottom: 2.5rem;
 }
 
-#pageTitle {
+.page-title {
   margin-top: 2rem;
   text-align: center;
 }
