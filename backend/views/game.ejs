@@ -16,7 +16,9 @@
           <% for (let i = 0; i < 15; i++) { %>
             <% for (let j = 0; j < 15; j++) { %>
               <% let index = i * 15 + j %>
-              <div 
+              <div
+                x=<%= i %>
+                y=<%= j %>
                 class="board-square square"
                 ondrop="drop(event)"
                 ondragover="allowDrop(event)"
@@ -47,11 +49,8 @@
                 id="<%= playerTiles[i].tile_id %>"
                 class="player-tile square no-drop"
                 style="background-color: #E1B995;"
-                draggable="true"
                 ondragstart="drag(event)"
-              >
-                <%= playerTiles[i].letter %>
-              </div>
+              ><%= playerTiles[i].letter %></div>
             </div>
           <% } %>
         </div>

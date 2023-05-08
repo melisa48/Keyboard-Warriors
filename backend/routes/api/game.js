@@ -61,12 +61,16 @@ router.post("/:id/submit-word", async (request, response) => {
   const { id: game_id } = request.params;
   const io = request.app.get("io");
 
+  const tilesPlayed = request.body;
+
   try {
     // get and set new current player & emit to room
     const newCurrentPlayer = await Games.setAndGetNewCurrentPlayer(game_id);
     io.sockets.in(game_id).emit("current-player", newCurrentPlayer);
 
-    response.status(200);
+    io.sockets.in(game_id).emit("board-updated", tilesPlayed);
+
+    response.status(200).send("placeholder");
   } catch (error) {
     console.log(error);
     response.status(500);

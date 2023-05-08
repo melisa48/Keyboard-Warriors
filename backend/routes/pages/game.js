@@ -85,17 +85,12 @@ router.get("/:id", requireToBeInGame, async (request, response) => {
   const chat = await Chat.getMessages(id);
   const gameTiles = await Games.getGameTiles(id);
 
-  console.log(request.session.user);
-
   let playerTiles = [];
   for (let i = 0; i < gameTiles.length; i++) {
     if (gameTiles[i].user_id === request.session.user.id) {
       playerTiles.push(gameTiles[i]);
     }
   }
-
-  console.log(`playerTiles`);
-  console.log(playerTiles);
 
   // get the player's tiles
   // console.log(gameTiles);
