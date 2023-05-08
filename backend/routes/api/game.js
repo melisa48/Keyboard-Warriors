@@ -56,18 +56,33 @@ router.get("/:id/join", async (request, response) => {
 });
 
 router.post("/:id/submit-word", async (request, response) => {
-  // TODO: check if the player can make a turn
-
   const { id: game_id } = request.params;
+  const { id: user_id } = request.session.user;
   const io = request.app.get("io");
 
   const tilesPlayed = request.body;
 
   try {
+    // TODO: check if the player can make a turn
+    // TODO: ensure user has the tiles that were played
+
+    // update game tiles table with each tile placed
+    tilesPlayed.forEach(async (tilePlayed) => {
+      // user_id is 0 as it is placed on the board
+      await Games.updateGameTiles(
+        game_id,
+        0,
+        tilePlayed.canonicalTileID,
+        tilePlayed.boardX,
+        tilePlayed.boardY
+      );
+    });
+
     // get and set new current player & emit to room
     const newCurrentPlayer = await Games.setAndGetNewCurrentPlayer(game_id);
     io.sockets.in(game_id).emit("current-player", newCurrentPlayer);
 
+    // emit the added tiles to the room
     io.sockets.in(game_id).emit("board-updated", tilesPlayed);
 
     response.status(200).send("placeholder");

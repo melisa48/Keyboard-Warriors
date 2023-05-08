@@ -79,12 +79,14 @@ router.get(
 );
 
 router.get("/:id", requireToBeInGame, async (request, response) => {
-  const id = request.params.id;
+  const { id: game_id } = request.params;
+  const { id: user_id } = request.session.user;
 
   const board = await Games.getBoard();
-  const chat = await Chat.getMessages(id);
-  const gameTiles = await Games.getGameTiles(id);
+  const chat = await Chat.getMessages(game_id);
+  const gameTiles = await Games.getGameTiles(game_id);
 
+  // get the player's tiles (tiles on their rack)
   let playerTiles = [];
   for (let i = 0; i < gameTiles.length; i++) {
     if (gameTiles[i].user_id === request.session.user.id) {
@@ -92,17 +94,27 @@ router.get("/:id", requireToBeInGame, async (request, response) => {
     }
   }
 
+  // get the tiles on the board of the game
+  let boardTiles = [];
+  for (let i = 0; i < gameTiles.length; i++) {
+    if (gameTiles[i].user_id === 0) {
+      boardTiles.push(gameTiles[i]);
+    }
+  }
+
+  // console.log("boardTiles");
+  // console.log(boardTiles);
+
   // get the player's tiles
   // console.log(gameTiles);
 
-  // TODO: tiles on the board
-
   response.render("game", {
     title: "Term Project (Game)",
-    gameID: id,
+    gameID: game_id,
     board,
     messages: chat,
     playerTiles: playerTiles,
+    boardTiles: boardTiles,
     ...request.session.user,
   });
 });

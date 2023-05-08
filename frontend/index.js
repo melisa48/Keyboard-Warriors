@@ -4,6 +4,9 @@ import { gameCreatedHandler } from "./games/created";
 import getGameId from "../shared/get-game-id";
 const game_id = getGameId(document.location.pathname);
 const user_id = document.querySelector("#user").dataset.userId;
+const board_tiles = JSON.parse(
+  document.querySelector("#boardTiles").dataset.boardTiles
+);
 const socket = io({
   query: {
     roomID: game_id,
@@ -99,20 +102,40 @@ submitButton.addEventListener("click", async () => {
 // });
 // });
 
+function placeTileOnBoard(x, y, id, letter) {
+  const boardSquare = document.querySelector(
+    `.board-square[x="${x}"][y="${y}"]`
+  );
+
+  const tileDiv = document.createElement("div");
+  tileDiv.id = id;
+  tileDiv.classList += "square no-drop";
+  tileDiv.style = "background-color: #E1B995;";
+  tileDiv.textContent = letter;
+
+  boardSquare.appendChild(tileDiv);
+}
+
+// put board tiles on board
+for (let i = 0; i < board_tiles.length; i++) {
+  const boardTile = board_tiles[i];
+  placeTileOnBoard(
+    boardTile.x,
+    boardTile.y,
+    boardTile.tile_id,
+    boardTile.letter
+  );
+}
+
 socket.on("board-updated", (newTiles) => {
   for (let i = 0; i < newTiles.length; i++) {
     const newTile = newTiles[i];
-    const boardSquare = document.querySelector(
-      `.board-square[x="${newTile.boardX}"][y="${newTile.boardY}"]`
+    placeTileOnBoard(
+      newTile.boardX,
+      newTile.boardY,
+      newTile.canonicalTileID,
+      newTile.letter
     );
-
-    const tile = document.createElement("div");
-    tile.id = newTile.canonicalTileID;
-    tile.classList += "square no-drop";
-    tile.style = "background-color: #E1B995;";
-    tile.textContent = newTile.letter;
-
-    boardSquare.appendChild(tile);
   }
 });
 

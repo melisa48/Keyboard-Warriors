@@ -32,7 +32,7 @@
                 style="background-color: red;">
               <% } else { %>
                 >
-              <% } %> 
+              <% } %>
               </div>
             <% } %>
           <% } %>
@@ -67,8 +67,9 @@
   </div>
   <div>
 
-  <!-- Information used in JavaScript files -->
+  <!-- Data used in JavaScript files -->
   <div id="user" data-user-id="<%= id %>"></div>
+  <div id="boardTiles" data-board-tiles="<%= JSON.stringify(boardTiles); %>"></div>
 
   <%- include('./partials/footer'); %>
   <script>
