@@ -94,6 +94,9 @@ router.get("/:id", requireToBeInGame, async (request, response) => {
     }
   }
 
+  console.log(`playerTiles`);
+  console.log(playerTiles);
+
   // get the player's tiles
   // console.log(gameTiles);
 

@@ -16,25 +16,43 @@
           <% for (let i = 0; i < 15; i++) { %>
             <% for (let j = 0; j < 15; j++) { %>
               <% let index = i * 15 + j %>
+              <div 
+                class="board-square square"
+                ondrop="drop(event)"
+                ondragover="allowDrop(event)"
               <% if (board[index].letter_multiplier === 2) { %>
-                <div class="square" style="background-color:lightblue">
+                style="background-color:lightblue">
               <% } else if (board[index].letter_multiplier === 3) { %>
-                <div class="square" style="background-color:teal;">
+                style="background-color:teal;">
               <% } else if (board[index].word_multiplier === 2) { %>
-                <div class="square" style="background-color: pink;">
+                style="background-color: pink;">
               <% } else if (board[index].word_multiplier === 3) { %>
-                <div class="square" style="background-color: red;">
+                style="background-color: red;">
               <% } else { %>
-                <div class="square">
+                >
               <% } %> 
-              <%= board[index].x %>, <%= board[index].y %></div>
+              </div>
             <% } %>
           <% } %>
         </div>
 
         <div class="player-tiles">
           <% for (let i = 0; i < playerTiles.length; i++) { %>
-            <div class="square" style="background-color: #E1B995;"><%= playerTiles[i].letter %></div>
+            <div
+              class="tile-box"
+              ondrop="drop(event)"
+              ondragover="allowDrop(event)"
+            >
+              <div
+                id="<%= playerTiles[i].tile_id %>"
+                class="player-tile square no-drop"
+                style="background-color: #E1B995;"
+                draggable="true"
+                ondragstart="drag(event)"
+              >
+                <%= playerTiles[i].letter %>
+              </div>
+            </div>
           <% } %>
         </div>
 
@@ -54,6 +72,34 @@
   <div id="user" data-user-id="<%= id %>"></div>
 
   <%- include('./partials/footer'); %>
+  <script>
+    // called by ondragover event to specify where dragged data can be dropped;
+    // allows a drop by preventing default handling of element
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    // specifies what should happen when the element is dragged
+    function drag(ev) {
+      // sets the data type and the value of the dragged data
+      ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    // called when dragged data is dropped
+    function drop(ev) {
+      // check if the target is another tile; don't allow
+      // drop on another tile
+      if (!ev.target.classList.contains("no-drop")) {
+        ev.preventDefault();
+
+        // gets dragged data; returns data that was set to same type in setData()
+        var data = ev.dataTransfer.getData("text");
+
+        // appends dragged element into drop element
+        ev.target.appendChild(document.getElementById(data));
+      }
+    }
+  </script>
   </div>
 </body>
 
