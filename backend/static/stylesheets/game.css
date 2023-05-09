@@ -36,9 +36,29 @@
   justify-content: space-around;
   width: 50%;
   margin-bottom: 15px;
+  height: 45px;
+}
+
+.tile-box {
+  width: 50px;
+  height: 50px;
+  border-style: solid;
+  position: relative;
+}
+
+.tile-box > .player-tile {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .player-tiles .square {
+  width: 45px;
+  height: 45px;
+}
+
+.board-square .square {
   width: 45px;
   height: 45px;
 }

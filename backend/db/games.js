@@ -30,7 +30,7 @@ const CANONICAL_TILES_SQL = `SELECT * FROM canonical_tiles;`;
 
 const INSERT_TILE_IN_GAME_TILES = `INSERT INTO game_tiles (game_id, user_id, tile_id, x, y) VALUES ($1, $2, $3, $4, $5)`;
 
-const GET_GAME_TILES_OF_GAME_SQL = `SELECT * FROM game_tiles gt, canonical_tiles ct WHERE game_id=$1 AND gt.tile_id = ct.id`;
+const GET_GAME_TILES_OF_GAME_SQL = `SELECT * FROM game_tiles gt, canonical_tiles ct WHERE gt.game_id=$1 AND gt.tile_id = ct.id`;
 
 const GET_CURRENT_PLAYER_OF_GAME_SQL = `SELECT gu.user_id FROM game_users gu WHERE gu.game_id=$1 AND current=true`;
 
@@ -148,6 +148,12 @@ const setAndGetNewCurrentPlayer = async (game_id) => {
   return userIdOfNextCurrentPlayer;
 };
 
+const UPDATE_GAME_TILES_SQL = `UPDATE game_tiles SET user_id=$1, x=$2, y=$3 WHERE game_id=$4 AND tile_id=$5`;
+
+const updateGameTiles = async (game_id, user_id, tile_id, x, y) => {
+  await db.none(UPDATE_GAME_TILES_SQL, [user_id, x, y, game_id, tile_id]);
+};
+
 module.exports = {
   list,
   create,
@@ -161,4 +167,5 @@ module.exports = {
   getGameTiles,
   getCurrentPlayerOfGame,
   setAndGetNewCurrentPlayer,
+  updateGameTiles,
 };
