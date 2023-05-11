@@ -125,6 +125,7 @@ const setAndGetNewCurrentPlayer = async (game_id) => {
   );
 
   // get play order of next current player
+  // TODO: use a while loop to get the next non-resigned player;
   let playOrderOfNextCurrentPlayer;
   if (currentPlayerPlayOrder.play_order == numberOfPlayersInGame) {
     playOrderOfNextCurrentPlayer = 1;

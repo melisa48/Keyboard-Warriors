@@ -22,15 +22,15 @@ router.get("/:id/start-game", requireToBeInGame, async (request, response) => {
 
   // get array of canonical tiles
   const canonicalTiles = await Games.getCanonicalTiles();
-  console.log(canonicalTiles);
+
   // get each player in the game and their ids
   const information = await Games.information(game_id);
   const players = information.players;
-  console.log(players);
 
-  // assign each 5 random canonical tiles, and insert into game_tiles
+  // assign each 7 random canonical tiles, and insert into game_tiles
+  const numberOfTilesPerPlayer = 7;
   for (let i = 0; i < players.length; i++) {
-    for (let j = 0; j < 5; j++) {
+    for (let j = 0; j < numberOfTilesPerPlayer; j++) {
       const randomIndexInCanonicalTiles = Math.floor(
         Math.random() * canonicalTiles.length
       );
