@@ -62,7 +62,18 @@
           <button id="submitButton">Submit</button>
         </div>
       </div>
-      <%- include('partials/chat.ejs') %>
+      <div class="chat-and-players" style="width: 50%">
+        <%- include('partials/chat.ejs') %>
+        
+        <div class="players">
+          <% for (let i = 0; i < playersAndScores.length; i++) { %>
+            <div class="player-<%= i %>">
+              <div class="username"><%= playersAndScores[i].username %></div>
+              <div class="score"><%= playersAndScores[i].score %></div>
+            </div>
+          <% } %>
+        </div>
+      </div>
     </div>
   </div>
   <div>

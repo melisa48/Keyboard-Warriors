@@ -86,6 +86,9 @@ router.get("/:id", requireToBeInGame, async (request, response) => {
   const chat = await Chat.getMessages(game_id);
   const gameTiles = await Games.getGameTiles(game_id);
 
+  // get the players in the game and their scores
+  const playersAndScores = await Games.playersAndScores(game_id);
+
   // get the player's tiles (tiles on their rack)
   let playerTiles = [];
   for (let i = 0; i < gameTiles.length; i++) {
@@ -109,6 +112,7 @@ router.get("/:id", requireToBeInGame, async (request, response) => {
     messages: chat,
     playerTiles: playerTiles,
     boardTiles: boardTiles,
+    playersAndScores: playersAndScores,
     ...request.session.user,
   });
 });

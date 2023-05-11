@@ -73,3 +73,26 @@
 #gameButtons button {
   font-size: 20px;
 }
+
+#chat-container {
+  text-align: center;
+}
+
+.players {
+  display: flex;
+  flex-direction: row;
+  /* margin: 0 auto; */
+  text-align: center;
+  justify-content: center;
+  font-size: 25px;
+  margin-top: 25%;
+}
+
+.players div {
+  border: 2px solid black;
+}
+
+.username,
+.score {
+  padding: 25px;
+}

@@ -210,6 +210,12 @@ const checkUserHasTile = async (user_id, game_id, tile_id) => {
   return result.exists;
 };
 
+const PLAYERS_AND_SCORES_SQL = `SELECT u.username, gu.score FROM game_users gu, users u WHERE gu.game_id=$1 AND gu.user_id=u.id`;
+
+const playersAndScores = async (game_id) => {
+  return await db.any(PLAYERS_AND_SCORES_SQL, [game_id]);
+};
+
 module.exports = {
   list,
   create,
@@ -227,4 +233,5 @@ module.exports = {
   getNumberOfTilesInBag,
   giveTilesFromBagToUser,
   checkUserHasTile,
+  playersAndScores,
 };
