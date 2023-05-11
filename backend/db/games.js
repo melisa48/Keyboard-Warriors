@@ -155,6 +155,61 @@ const updateGameTiles = async (game_id, user_id, tile_id, x, y) => {
   await db.none(UPDATE_GAME_TILES_SQL, [user_id, x, y, game_id, tile_id]);
 };
 
+const GET_NUMBER_OF_TILES_IN_BAG_SQL = `SELECT COUNT(*) FROM game_tiles WHERE game_id=$1 AND user_id=-1`;
+
+const getNumberOfTilesInBag = async (game_id) => {
+  return await db.one(GET_NUMBER_OF_TILES_IN_BAG_SQL, [game_id]);
+};
+
+const GET_TILES_FROM_BAG_SQL = `SELECT tile_id FROM game_tiles WHERE game_id=$1 AND user_id=-1 ORDER BY random() LIMIT $2`;
+const GIVE_TILES_FROM_BAG_TO_USER_SQL = `
+  UPDATE game_tiles
+  SET user_id=$1
+  WHERE game_id=$2 AND tile_id = ANY ($3)
+  RETURNING tile_id`;
+
+const giveTilesFromBagToUser = async (user_id, game_id, number_of_tiles) => {
+  // get number_of_tiles from bag
+  const tilesFromBag = await db.any(GET_TILES_FROM_BAG_SQL, [
+    game_id,
+    number_of_tiles,
+  ]);
+
+  let arrayOfTilesFromBag = [];
+  tilesFromBag.forEach((tileFromBag) => {
+    arrayOfTilesFromBag.push(tileFromBag.tile_id);
+  });
+
+  const newTileIDsForPlayer = await db.any(GIVE_TILES_FROM_BAG_TO_USER_SQL, [
+    user_id,
+    game_id,
+    arrayOfTilesFromBag,
+  ]);
+
+  let arrayOfTileIdsForPlayer = [];
+  newTileIDsForPlayer.forEach((newTileIDForPlayer) => {
+    arrayOfTileIdsForPlayer.push(newTileIDForPlayer.tile_id);
+  });
+
+  const canonicalInformationAboutTiles = await db.any(
+    `SELECT id, letter FROM canonical_tiles WHERE id = ANY ($1)`,
+    [arrayOfTileIdsForPlayer]
+  );
+
+  return canonicalInformationAboutTiles;
+};
+
+const CHECK_USER_HAS_TILE_SQL = `SELECT EXISTS(SELECT * FROM game_tiles WHERE user_id=$1 AND game_id=$2 AND tile_id=$3)`;
+
+const checkUserHasTile = async (user_id, game_id, tile_id) => {
+  const result = await db.one(CHECK_USER_HAS_TILE_SQL, [
+    user_id,
+    game_id,
+    tile_id,
+  ]);
+  return result.exists;
+};
+
 module.exports = {
   list,
   create,
@@ -169,4 +224,7 @@ module.exports = {
   getCurrentPlayerOfGame,
   setAndGetNewCurrentPlayer,
   updateGameTiles,
+  getNumberOfTilesInBag,
+  giveTilesFromBagToUser,
+  checkUserHasTile,
 };

@@ -43,6 +43,7 @@ const gameButtonsContainer = document.getElementById("gameButtons");
 const gameButtons = gameButtonsContainer.querySelectorAll("button");
 
 const submitButton = gameButtonsContainer.querySelector("#submitButton");
+
 submitButton.addEventListener("click", async () => {
   // get all board square divs with player tile children
   const boardSquares = document.querySelectorAll(".board-square");
@@ -73,34 +74,52 @@ submitButton.addEventListener("click", async () => {
   // successful, don't remove)
   // since server will emit, and client will listen, will update the board accordingly
   // tiles emitted won't be draggable
-
   await fetch(`/api/games/${game_id}/submit-word`, {
     method: "post",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(tilesPlayed),
   })
-    .then(() => {
+    .then((newTiles) => {
       // remove played tiles from board
       boardSquaresWithPlayerTile.forEach((boardSquareWithPlayerTile) => {
         const playerTile =
           boardSquareWithPlayerTile.querySelector(".player-tile");
         boardSquareWithPlayerTile.removeChild(playerTile);
       });
+
+      return newTiles.json();
+    })
+    .then((newTiles) => {
+      const tileBoxElements = document.getElementsByClassName("tile-box");
+
+      let iterator = 0;
+      for (let i = 0; i < tileBoxElements.length; i++) {
+        // ensure that for loop doesn't go over the new tiles length
+        if (iterator == newTiles.length) {
+          break;
+        }
+
+        // add tile to tile boxes that don't have a tile
+        if (tileBoxElements[i].childElementCount == 0) {
+          // create player-tile
+          const divElement = document.createElement("div");
+          divElement.id = newTiles[iterator].id;
+          divElement.classList += "player-tile square no-drop";
+          divElement.style = "background-color: #E1B995;";
+          divElement.addEventListener("dragstart", drag);
+          divElement.textContent = newTiles[iterator].letter;
+
+          // append the newly created player-tile to the tile box which is missing a tile
+          tileBoxElements[i].appendChild(divElement);
+
+          iterator += 1;
+        }
+      }
     })
     .catch((error) => {
       console.log(error);
     });
 });
-
-// gameButtons.forEach((button) => {
-// button.addEventListener("click", async () => {
-//   await fetch(`/api/games/${game_id}/submit-word`, {
-//     method: "post",
-//   }).catch((error) => {
-//     console.log(error);
-//   });
-// });
-// });
 
 function placeTileOnBoard(x, y, id, letter) {
   const boardSquare = document.querySelector(

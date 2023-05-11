@@ -102,12 +102,6 @@ router.get("/:id", requireToBeInGame, async (request, response) => {
     }
   }
 
-  // console.log("boardTiles");
-  // console.log(boardTiles);
-
-  // get the player's tiles
-  // console.log(gameTiles);
-
   response.render("game", {
     title: "Term Project (Game)",
     gameID: game_id,
