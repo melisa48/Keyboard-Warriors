@@ -149,6 +149,41 @@ const setAndGetNewCurrentPlayer = async (game_id) => {
   return userIdOfNextCurrentPlayer;
 };
 
+
+const resign = async (game_id, user_id) => {
+  // Ensure that the player is in the game
+  const userInGame = await check_user_in_game(user_id, game_id);
+  if (!userInGame) {
+    throw new Error("Player is not in the game.");
+  }
+
+  // Ensure that it is the player's turn
+  const currentPlayer = await getCurrentPlayerOfGame(game_id);
+  if (currentPlayer.user_id !== user_id) {
+    throw new Error("It is not the player's turn.");
+  }
+
+  // Set the player's score to -1 in game_users
+  await db.none("UPDATE game_users SET score = -1 WHERE game_id = $1 AND user_id = $2", [game_id, user_id]);
+
+  // Set the player's resigned field to true in game_users
+  await db.none("UPDATE game_users SET resigned = true WHERE game_id = $1 AND user_id = $2", [game_id, user_id]);
+
+  // Count the number of players in the game (originally) and the number of resigned players
+  const { count: numberOfPlayers } = await db.one(NUMBER_OF_PLAYERS_IN_GAME_SQL, [game_id]);
+  const { count: numberOfResignedPlayers } = await db.one("SELECT COUNT(*) FROM game_users WHERE game_id = $1 AND resigned = true", [game_id]);
+  const remainingPlayers = numberOfPlayers - numberOfResignedPlayers;
+
+  // If there is only 1 player remaining, end the game
+  if (remainingPlayers === 1) {
+    // Game ends because only 1 player is in the game now
+    // Perform any necessary actions to end the game
+  } else {
+    // Otherwise, give the next player the turn
+    await setAndGetNewCurrentPlayer(game_id);
+  }
+};
+
 const UPDATE_GAME_TILES_SQL = `UPDATE game_tiles SET user_id=$1, x=$2, y=$3 WHERE game_id=$4 AND tile_id=$5`;
 
 const updateGameTiles = async (game_id, user_id, tile_id, x, y) => {
@@ -227,4 +262,5 @@ module.exports = {
   getNumberOfTilesInBag,
   giveTilesFromBagToUser,
   checkUserHasTile,
+  resign,
 };
