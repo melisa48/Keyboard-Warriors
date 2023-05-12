@@ -3,6 +3,9 @@
       606: (t) => {
         t.exports = { CHAT_MESSAGE_RECEIVED: "chat-message-received" };
       },
+      906: (t) => {
+        t.exports = { GAME_CREATED: "game:created" };
+      },
       123: (t) => {
         t.exports = function (t) {
           const e = /\/(\d+)(\/|$)/.exec(t);
@@ -73,33 +76,33 @@
             s.readAsDataURL(t)
           );
         },
-        c = ({ type: t, data: s }, n, i) => {
+        h = ({ type: t, data: s }, n, i) => {
           return r && s instanceof Blob
             ? n
               ? i(s)
               : a(s, i)
             : o &&
               (s instanceof ArrayBuffer ||
-                ((c = s),
+                ((h = s),
                 "function" == typeof ArrayBuffer.isView
-                  ? ArrayBuffer.isView(c)
-                  : c && c.buffer instanceof ArrayBuffer))
+                  ? ArrayBuffer.isView(h)
+                  : h && h.buffer instanceof ArrayBuffer))
             ? n
               ? i(s)
               : a(new Blob([s]), i)
             : i(e[t] + (s || ""));
-          var c;
+          var h;
         },
-        h = "undefined" == typeof Uint8Array ? [] : new Uint8Array(256);
+        c = "undefined" == typeof Uint8Array ? [] : new Uint8Array(256);
       for (let t = 0; t < 64; t++)
-        h[
+        c[
           "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".charCodeAt(
             t
           )
         ] = t;
-      const u = "function" == typeof ArrayBuffer,
-        p = (t, e) => {
-          if (u) {
+      const p = "function" == typeof ArrayBuffer,
+        u = (t, e) => {
+          if (p) {
             const s = ((t) => {
               let e,
                 s,
@@ -108,19 +111,19 @@
                 r,
                 o = 0.75 * t.length,
                 a = t.length,
-                c = 0;
+                h = 0;
               "=" === t[t.length - 1] && (o--, "=" === t[t.length - 2] && o--);
-              const u = new ArrayBuffer(o),
-                p = new Uint8Array(u);
+              const p = new ArrayBuffer(o),
+                u = new Uint8Array(p);
               for (e = 0; e < a; e += 4)
-                (s = h[t.charCodeAt(e)]),
-                  (n = h[t.charCodeAt(e + 1)]),
-                  (i = h[t.charCodeAt(e + 2)]),
-                  (r = h[t.charCodeAt(e + 3)]),
-                  (p[c++] = (s << 2) | (n >> 4)),
-                  (p[c++] = ((15 & n) << 4) | (i >> 2)),
-                  (p[c++] = ((3 & i) << 6) | (63 & r));
-              return u;
+                (s = c[t.charCodeAt(e)]),
+                  (n = c[t.charCodeAt(e + 1)]),
+                  (i = c[t.charCodeAt(e + 2)]),
+                  (r = c[t.charCodeAt(e + 3)]),
+                  (u[h++] = (s << 2) | (n >> 4)),
+                  (u[h++] = ((15 & n) << 4) | (i >> 2)),
+                  (u[h++] = ((3 & i) << 6) | (63 & r));
+              return p;
             })(t);
             return l(s, e);
           }
@@ -132,7 +135,7 @@
           if ("string" != typeof t) return { type: "message", data: l(t, e) };
           const s = t.charAt(0);
           return "b" === s
-            ? { type: "message", data: p(t.substring(1), e) }
+            ? { type: "message", data: u(t.substring(1), e) }
             : n[s]
             ? t.length > 1
               ? { type: n[s], data: t.substring(1) }
@@ -224,13 +227,13 @@
       }
       const b = g.setTimeout,
         v = g.clearTimeout;
-      function k(t, e) {
+      function _(t, e) {
         e.useNativeTimers
           ? ((t.setTimeoutFn = b.bind(g)), (t.clearTimeoutFn = v.bind(g)))
           : ((t.setTimeoutFn = g.setTimeout.bind(g)),
             (t.clearTimeoutFn = g.clearTimeout.bind(g)));
       }
-      class _ extends Error {
+      class k extends Error {
         constructor(t, e, s) {
           super(t),
             (this.description = e),
@@ -242,13 +245,13 @@
         constructor(t) {
           super(),
             (this.writable = !1),
-            k(this, t),
+            _(this, t),
             (this.opts = t),
             (this.query = t.query),
             (this.socket = t.socket);
         }
         onError(t, e, s) {
-          return super.emitReserved("error", new _(t, e, s)), this;
+          return super.emitReserved("error", new k(t, e, s)), this;
         }
         open() {
           return (this.readyState = "opening"), this.doOpen(), this;
@@ -289,16 +292,16 @@
       let T,
         O = 0,
         R = 0;
-      function S(t) {
+      function x(t) {
         let e = "";
         do {
           (e = E[t % A] + e), (t = Math.floor(t / A));
         } while (t > 0);
         return e;
       }
-      function x() {
-        const t = S(+new Date());
-        return t !== T ? ((O = 0), (T = t)) : t + "." + S(O++);
+      function S() {
+        const t = x(+new Date());
+        return t !== T ? ((O = 0), (T = t)) : t + "." + x(O++);
       }
       for (; R < A; R++) C[E[R]] = R;
       function B(t) {
@@ -331,10 +334,10 @@
       }
       function P() {}
       const j = null != new q({ xdomain: !1 }).responseType;
-      class I extends y {
+      class D extends y {
         constructor(t, e) {
           super(),
-            k(this, e),
+            _(this, e),
             (this.opts = e),
             (this.method = e.method || "GET"),
             (this.uri = t),
@@ -395,7 +398,7 @@
             }, 0);
           }
           "undefined" != typeof document &&
-            ((this.index = I.requestsCount++), (I.requests[this.index] = this));
+            ((this.index = D.requestsCount++), (D.requests[this.index] = this));
         }
         onError(t) {
           this.emitReserved("error", t, this.xhr), this.cleanup(!0);
@@ -406,7 +409,7 @@
               try {
                 this.xhr.abort();
               } catch (t) {}
-            "undefined" != typeof document && delete I.requests[this.index],
+            "undefined" != typeof document && delete D.requests[this.index],
               (this.xhr = null);
           }
         }
@@ -421,19 +424,19 @@
           this.cleanup();
         }
       }
-      function D() {
-        for (let t in I.requests)
-          I.requests.hasOwnProperty(t) && I.requests[t].abort();
+      function I() {
+        for (let t in D.requests)
+          D.requests.hasOwnProperty(t) && D.requests[t].abort();
       }
-      (I.requestsCount = 0),
-        (I.requests = {}),
+      (D.requestsCount = 0),
+        (D.requests = {}),
         "undefined" != typeof document &&
           ("function" == typeof attachEvent
-            ? attachEvent("onunload", D)
+            ? attachEvent("onunload", I)
             : "function" == typeof addEventListener &&
               addEventListener(
                 "onpagehide" in g ? "pagehide" : "unload",
-                D,
+                I,
                 !1
               ));
       const M =
@@ -503,7 +506,7 @@
               for (let e = 0; e < t.length; e++) {
                 const s = t[e],
                   n = e === t.length - 1;
-                c(s, this.supportsBinary, (t) => {
+                h(s, this.supportsBinary, (t) => {
                   try {
                     this.ws.send(t);
                   } catch (t) {}
@@ -526,7 +529,7 @@
                   ("ws" === e && 80 !== Number(this.opts.port))) &&
                 (s = ":" + this.opts.port),
                 this.opts.timestampRequests &&
-                  (t[this.opts.timestampParam] = x()),
+                  (t[this.opts.timestampParam] = S()),
                 this.supportsBinary || (t.b64 = 1);
               const n = B(t);
               return (
@@ -631,7 +634,7 @@
                     n = new Array(s);
                   let i = 0;
                   t.forEach((t, r) => {
-                    c(t, !1, (t) => {
+                    h(t, !1, (t) => {
                       (n[r] = t), ++i === s && e(n.join(f));
                     });
                   });
@@ -646,7 +649,7 @@
               const e = this.opts.secure ? "https" : "http";
               let s = "";
               !1 !== this.opts.timestampRequests &&
-                (t[this.opts.timestampParam] = x()),
+                (t[this.opts.timestampParam] = S()),
                 this.supportsBinary || t.sid || (t.b64 = 1),
                 this.opts.port &&
                   (("https" === e && 443 !== Number(this.opts.port)) ||
@@ -667,7 +670,7 @@
             request(t = {}) {
               return (
                 Object.assign(t, { xd: this.xd, xs: this.xs }, this.opts),
-                new I(this.uri(), t)
+                new D(this.uri(), t)
               );
             }
             doWrite(t, e) {
@@ -689,7 +692,7 @@
         },
         H =
           /^(?:(?![^:@\/?#]+:[^:@\/]*@)(http|https|ws|wss):\/\/)?((?:(([^:@\/?#]*)(?::([^:@\/?#]*))?)?@)?((?:[a-f0-9]{0,4}:){2,7}[a-f0-9]{0,4}|[^:\/?#]*)(?::(\d*))?)(((\/(?:[^?#](?![^?#\/]*\.[^?#\/.]+(?:[?#]|$)))*\/?)?([^?#\/]*))(?:\?([^#]*))?(?:#(.*))?)/,
-        Y = [
+        K = [
           "source",
           "protocol",
           "authority",
@@ -705,7 +708,7 @@
           "query",
           "anchor",
         ];
-      function K(t) {
+      function Y(t) {
         const e = t,
           s = t.indexOf("["),
           n = t.indexOf("]");
@@ -718,7 +721,7 @@
         let i = H.exec(t || ""),
           r = {},
           o = 14;
-        for (; o--; ) r[Y[o]] = i[o] || "";
+        for (; o--; ) r[K[o]] = i[o] || "";
         return (
           -1 != s &&
             -1 != n &&
@@ -751,19 +754,19 @@
           r
         );
       }
-      class $ extends y {
+      class z extends y {
         constructor(t, e = {}) {
           super(),
             (this.writeBuffer = []),
             t && "object" == typeof t && ((e = t), (t = null)),
             t
-              ? ((t = K(t)),
+              ? ((t = Y(t)),
                 (e.hostname = t.host),
                 (e.secure = "https" === t.protocol || "wss" === t.protocol),
                 (e.port = t.port),
                 t.query && (e.query = t.query))
-              : e.host && (e.hostname = K(e.host).host),
-            k(this, e),
+              : e.host && (e.hostname = Y(e.host).host),
+            _(this, e),
             (this.secure =
               null != e.secure
                 ? e.secure
@@ -861,7 +864,7 @@
           let t;
           if (
             this.opts.rememberUpgrade &&
-            $.priorWebsocketSuccess &&
+            z.priorWebsocketSuccess &&
             -1 !== this.transports.indexOf("websocket")
           )
             t = "websocket";
@@ -892,7 +895,7 @@
         probe(t) {
           let e = this.createTransport(t),
             s = !1;
-          $.priorWebsocketSuccess = !1;
+          z.priorWebsocketSuccess = !1;
           const n = () => {
             s ||
               (e.send([{ type: "ping", data: "probe" }]),
@@ -905,11 +908,11 @@
                       !e)
                     )
                       return;
-                    ($.priorWebsocketSuccess = "websocket" === e.name),
+                    (z.priorWebsocketSuccess = "websocket" === e.name),
                       this.transport.pause(() => {
                         s ||
                           ("closed" !== this.readyState &&
-                            (h(),
+                            (c(),
                             this.setTransport(e),
                             e.send([{ type: "upgrade" }]),
                             this.emitReserved("upgrade", e),
@@ -925,7 +928,7 @@
               }));
           };
           function i() {
-            s || ((s = !0), h(), e.close(), (e = null));
+            s || ((s = !0), c(), e.close(), (e = null));
           }
           const r = (t) => {
             const s = new Error("probe error: " + t);
@@ -937,27 +940,27 @@
           function a() {
             r("socket closed");
           }
-          function c(t) {
+          function h(t) {
             e && t.name !== e.name && i();
           }
-          const h = () => {
+          const c = () => {
             e.removeListener("open", n),
               e.removeListener("error", r),
               e.removeListener("close", o),
               this.off("close", a),
-              this.off("upgrading", c);
+              this.off("upgrading", h);
           };
           e.once("open", n),
             e.once("error", r),
             e.once("close", o),
             this.once("close", a),
-            this.once("upgrading", c),
+            this.once("upgrading", h),
             e.open();
         }
         onOpen() {
           if (
             ((this.readyState = "open"),
-            ($.priorWebsocketSuccess = "websocket" === this.transport.name),
+            (z.priorWebsocketSuccess = "websocket" === this.transport.name),
             this.emitReserved("open"),
             this.flush(),
             "open" === this.readyState && this.opts.upgrade)
@@ -1117,7 +1120,7 @@
           );
         }
         onError(t) {
-          ($.priorWebsocketSuccess = !1),
+          (z.priorWebsocketSuccess = !1),
             this.emitReserved("error", t),
             this.onClose("transport error", t);
         }
@@ -1150,26 +1153,26 @@
           return e;
         }
       }
-      ($.protocol = 4), $.protocol;
-      const z = "function" == typeof ArrayBuffer,
-        W = (t) =>
+      (z.protocol = 4), z.protocol;
+      const W = "function" == typeof ArrayBuffer,
+        $ = (t) =>
           "function" == typeof ArrayBuffer.isView
             ? ArrayBuffer.isView(t)
             : t.buffer instanceof ArrayBuffer,
         J = Object.prototype.toString,
-        X =
+        Q =
           "function" == typeof Blob ||
           ("undefined" != typeof Blob &&
             "[object BlobConstructor]" === J.call(Blob)),
-        Q =
+        X =
           "function" == typeof File ||
           ("undefined" != typeof File &&
             "[object FileConstructor]" === J.call(File));
       function G(t) {
         return (
-          (z && (t instanceof ArrayBuffer || W(t))) ||
-          (X && t instanceof Blob) ||
-          (Q && t instanceof File)
+          (W && (t instanceof ArrayBuffer || $(t))) ||
+          (Q && t instanceof Blob) ||
+          (X && t instanceof File)
         );
       }
       function Z(t, e) {
@@ -1289,7 +1292,7 @@
             const s = e.type === rt.BINARY_EVENT;
             s || e.type === rt.BINARY_ACK
               ? ((e.type = s ? rt.EVENT : rt.ACK),
-                (this.reconstructor = new ct(e)),
+                (this.reconstructor = new ht(e)),
                 0 === e.attachments && super.emitReserved("decoded", e))
               : super.emitReserved("decoded", e);
           } else {
@@ -1371,7 +1374,7 @@
             (this.reconstructor = null));
         }
       }
-      class ct {
+      class ht {
         constructor(t) {
           (this.packet = t), (this.buffers = []), (this.reconPack = t);
         }
@@ -1389,7 +1392,7 @@
           (this.reconPack = null), (this.buffers = []);
         }
       }
-      function ht(t, e, s) {
+      function ct(t, e, s) {
         return (
           t.on(e, s),
           function () {
@@ -1397,7 +1400,7 @@
           }
         );
       }
-      const ut = Object.freeze({
+      const pt = Object.freeze({
         connect: 1,
         connect_error: 1,
         disconnect: 1,
@@ -1405,7 +1408,7 @@
         newListener: 1,
         removeListener: 1,
       });
-      class pt extends y {
+      class ut extends y {
         constructor(t, e, s) {
           super(),
             (this.connected = !1),
@@ -1430,10 +1433,10 @@
           if (this.subs) return;
           const t = this.io;
           this.subs = [
-            ht(t, "open", this.onopen.bind(this)),
-            ht(t, "packet", this.onpacket.bind(this)),
-            ht(t, "error", this.onerror.bind(this)),
-            ht(t, "close", this.onclose.bind(this)),
+            ct(t, "open", this.onopen.bind(this)),
+            ct(t, "packet", this.onpacket.bind(this)),
+            ct(t, "error", this.onerror.bind(this)),
+            ct(t, "close", this.onclose.bind(this)),
           ];
         }
         get active() {
@@ -1455,7 +1458,7 @@
           return t.unshift("message"), this.emit.apply(this, t), this;
         }
         emit(t, ...e) {
-          if (ut.hasOwnProperty(t))
+          if (pt.hasOwnProperty(t))
             throw new Error('"' + t.toString() + '" is a reserved event name');
           if (
             (e.unshift(t),
@@ -1769,7 +1772,7 @@
             e && "object" == typeof e && ((s = e), (e = void 0)),
             ((s = s || {}).path = s.path || "/socket.io"),
             (this.opts = s),
-            k(this, s),
+            _(this, s),
             this.reconnection(!1 !== s.reconnection),
             this.reconnectionAttempts(s.reconnectionAttempts || 1 / 0),
             this.reconnectionDelay(s.reconnectionDelay || 1e3),
@@ -1836,14 +1839,14 @@
         }
         open(t) {
           if (~this._readyState.indexOf("open")) return this;
-          this.engine = new $(this.uri, this.opts);
+          this.engine = new z(this.uri, this.opts);
           const e = this.engine,
             s = this;
           (this._readyState = "opening"), (this.skipReconnect = !1);
-          const n = ht(e, "open", function () {
+          const n = ct(e, "open", function () {
               s.onopen(), t && t();
             }),
-            i = ht(e, "error", (e) => {
+            i = ct(e, "error", (e) => {
               s.cleanup(),
                 (s._readyState = "closed"),
                 this.emitReserved("error", e),
@@ -1871,11 +1874,11 @@
             this.emitReserved("open");
           const t = this.engine;
           this.subs.push(
-            ht(t, "ping", this.onping.bind(this)),
-            ht(t, "data", this.ondata.bind(this)),
-            ht(t, "error", this.onerror.bind(this)),
-            ht(t, "close", this.onclose.bind(this)),
-            ht(this.decoder, "decoded", this.ondecoded.bind(this))
+            ct(t, "ping", this.onping.bind(this)),
+            ct(t, "data", this.ondata.bind(this)),
+            ct(t, "error", this.onerror.bind(this)),
+            ct(t, "close", this.onclose.bind(this)),
+            ct(this.decoder, "decoded", this.ondecoded.bind(this))
           );
         }
         onping() {
@@ -1901,7 +1904,7 @@
           return (
             s
               ? this._autoConnect && !s.active && s.connect()
-              : ((s = new pt(this, t, e)), (this.nsps[t] = s)),
+              : ((s = new ut(this, t, e)), (this.nsps[t] = s)),
             s
           );
         }
@@ -1982,7 +1985,7 @@
                   (t = "/" === t.charAt(1) ? s.protocol + t : s.host + t),
                 /^(https?|wss?):\/\//.test(t) ||
                   (t = void 0 !== s ? s.protocol + "//" + t : "https://" + t),
-                (n = K(t))),
+                (n = Y(t))),
               n.port ||
                 (/^(http|ws)$/.test(n.protocol)
                   ? (n.port = "80")
@@ -2012,7 +2015,7 @@
           a.socket(s.path, e)
         );
       }
-      Object.assign(yt, { Manager: dt, Socket: pt, io: yt, connect: yt });
+      Object.assign(yt, { Manager: dt, Socket: ut, io: yt, connect: yt });
       var gt = s(123),
         mt = s.n(gt);
       const bt = yt({ query: { roomID: mt()(document.location.pathname) } });
@@ -2020,8 +2023,8 @@
         console.log("Connected with id: " + bt.id);
       });
       const vt = bt;
-      var kt = s(606),
-        _t = s.n(kt);
+      var _t = s(606),
+        kt = s.n(_t);
       const wt = mt()(document.location.pathname),
         Et = document.querySelector("#messages");
       document
@@ -2036,121 +2039,45 @@
               body: JSON.stringify({ message: e }),
             });
         });
-      const At = mt()(document.location.pathname),
-        Ct = document.querySelector("#user").dataset.userId,
-        Tt = JSON.parse(
-          document.querySelector("#boardTiles").dataset.boardTiles
-        ),
-        Ot = document.getElementsByClassName("player-tile"),
-        Rt = document.getElementById("gameButtons"),
-        St = Rt.querySelectorAll("button");
-      function xt(t, e, s, n) {
-        const i = document.querySelector(`.board-square[x="${t}"][y="${e}"]`),
-          r = document.createElement("div");
-        (r.id = s),
-          (r.classList += "square no-drop"),
-          (r.style = "background-color: #E1B995;"),
-          (r.textContent = n),
-          i.appendChild(r);
-      }
+      var At = s(906);
+      const Ct = document.querySelector("#games-list"),
+        Tt = document.querySelector("#available-game-item");
       !(function (t) {
-        t.on(
-          _t().CHAT_MESSAGE_RECEIVED,
-          ({ username: t, message: e, timestamp: s }) => {
-            Et.appendChild(
-              (function (t, e, s) {
-                const n = document.createElement("div"),
-                  i = document.createElement("span");
-                i.innerText = t + " ";
-                const r = document.createElement("span");
-                r.innerText = e + " ";
-                const o = document.createElement("span");
-                return (o.innerText = s), n.append(i, r, o), n;
-              })(t, e, s)
-            );
-          }
-        );
+        t.on(At.GAME_CREATED, ({ game_id: t, game_title: e }) => {
+          Ct.appendChild(
+            (function (t, e) {
+              const s = Tt.content.cloneNode(!0);
+              return (
+                s
+                  .querySelector("button")
+                  .setAttribute(
+                    "onclick",
+                    `window.location.href='/api/games/${t}/join'`
+                  ),
+                (s.querySelector("span").innerText = e),
+                s
+              );
+            })(t, e)
+          );
+        });
       })(vt),
-        (function (t, e) {
-          t.querySelector("#submitButton").addEventListener(
-            "click",
-            async () => {
-              const t = document.querySelectorAll(".board-square"),
-                s = Array.from(t).filter((t) =>
-                  t.querySelector(".player-tile")
-                );
-              let n = [];
-              s.forEach((t) => {
-                const e = parseInt(t.getAttribute("x")),
-                  s = parseInt(t.getAttribute("y")),
-                  i = t.querySelector(".player-tile"),
-                  r = parseInt(i.getAttribute("id"));
-                n.push({
-                  boardX: e,
-                  boardY: s,
-                  canonicalTileID: r,
-                  letter: i.textContent,
-                });
-              }),
-                await fetch(`/api/games/${e}/submit-word`, {
-                  method: "post",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(n),
-                })
-                  .then(
-                    (t) => (
-                      s.forEach((t) => {
-                        const e = t.querySelector(".player-tile");
-                        t.removeChild(e);
-                      }),
-                      t.json()
-                    )
-                  )
-                  .then((t) => {
-                    const e = document.getElementsByClassName("tile-box");
-                    let s = 0;
-                    for (let n = 0; n < e.length && s != t.length; n++)
-                      if (0 == e[n].childElementCount) {
-                        const i = document.createElement("div");
-                        (i.id = t[s].id),
-                          (i.classList += "player-tile square no-drop"),
-                          (i.style = "background-color: #E1B995;"),
-                          i.addEventListener("dragstart", drag),
-                          (i.textContent = t[s].letter),
-                          e[n].appendChild(i),
-                          (s += 1);
-                      }
-                  })
-                  .catch((t) => {
-                    console.log(t);
-                  });
+        (function (t) {
+          t.on(
+            kt().CHAT_MESSAGE_RECEIVED,
+            ({ username: t, message: e, timestamp: s }) => {
+              Et.appendChild(
+                (function (t, e, s) {
+                  const n = document.createElement("div"),
+                    i = document.createElement("span");
+                  i.innerText = t + " ";
+                  const r = document.createElement("span");
+                  r.innerText = e + " ";
+                  const o = document.createElement("span");
+                  return (o.innerText = s), n.append(i, r, o), n;
+                })(t, e, s)
+              );
             }
           );
-        })(Rt, At);
-      for (let t = 0; t < Tt.length; t++) {
-        const e = Tt[t];
-        xt(e.x, e.y, e.tile_id, e.letter);
-      }
-      vt.on("board-updated", (t) => {
-        for (let e = 0; e < t.length; e++) {
-          const s = t[e];
-          xt(s.boardX, s.boardY, s.canonicalTileID, s.letter);
-        }
-      }),
-        vt.on("current-player", (t) => {
-          if (parseInt(t.user_id) == Ct) {
-            St.forEach((t) => {
-              t.disabled = !1;
-            });
-            for (let t = 0; t < Ot.length; t++)
-              Ot[t].setAttribute("draggable", !0);
-          } else {
-            St.forEach((t) => {
-              t.disabled = !0;
-            });
-            for (let t = 0; t < Ot.length; t++)
-              Ot[t].setAttribute("draggable", !1);
-          }
-        });
+        })(vt);
     })();
 })();

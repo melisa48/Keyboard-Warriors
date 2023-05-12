@@ -3,7 +3,7 @@ import { GAME_CREATED } from "../../shared/constants";
 const gameList = document.querySelector("#games-list");
 const itemTemplate = document.querySelector("#available-game-item");
 
-export function createGameListItem(game_id, game_title) {
+function createGameListItem(game_id, game_title) {
   const entry = itemTemplate.content.cloneNode(true);
 
   entry
