@@ -95,6 +95,16 @@ const ensureUserHasTiles = async (userID, gameID, tiles, idAttribute) => {
   return true;
 };
 
+const ensureUserInGame = async (userID, gameID) => {
+  const playerInGame = await Games.playerInGame(userID, gameID);
+  return playerInGame[0].exists;
+};
+
+const ensureUserCanMakeTurn = async (userID, gameID) => {
+  const userCanMakeTurn = await Games.userCanMakeTurn(userID, gameID);
+  return userCanMakeTurn[0].exists;
+};
+
 router.post("/:id/submit-word", async (request, response) => {
   const { id: game_id } = request.params;
   const { id: user_id } = request.session.user;
@@ -103,7 +113,17 @@ router.post("/:id/submit-word", async (request, response) => {
   const tilesPlayed = request.body;
 
   try {
-    // TODO: check if the player can make a turn
+    // ensure player is in the game
+    const userInGame = await ensureUserInGame(user_id, game_id);
+    if (!userInGame) {
+      throw new Error("User not in game!");
+    }
+
+    // check if the player can make a turn
+    const userCanMakeTurn = await ensureUserCanMakeTurn(user_id, game_id);
+    if (!userCanMakeTurn) {
+      throw new Error("User can't make turn!");
+    }
 
     // ensure user has the tiles that were played
     const userHasTiles = await ensureUserHasTiles(
@@ -116,8 +136,13 @@ router.post("/:id/submit-word", async (request, response) => {
       throw new Error("User doesn't have the tiles!");
     }
 
-    // update game tiles table with each tile placed
-    tilesPlayed.forEach(async (tilePlayed) => {
+    // TODO: ensure board positions aren't taken already
+
+    // TODO: check that tiles comply with Scrabble rules
+
+    // update game tiles table with each tile placed &
+    // update user's score in game_users
+    for (const tilePlayed of tilesPlayed) {
       // user_id is 0 as it is placed on the board
       await Games.updateGameTiles(
         game_id,
@@ -126,7 +151,18 @@ router.post("/:id/submit-word", async (request, response) => {
         tilePlayed.boardX,
         tilePlayed.boardY
       );
-    });
+
+      // update the user's score with each tile's point value
+      await Games.updateUserScoreInGame(
+        game_id,
+        user_id,
+        tilePlayed.canonicalTileID
+      );
+    }
+
+    // emit the player's id and their new score to the room
+    const newPlayerScore = await Games.getUserScoreInGame(game_id, user_id);
+    io.sockets.in(game_id).emit("player-score-updated", newPlayerScore);
 
     // get and set new current player & emit to room
     const newCurrentPlayer = await Games.setAndGetNewCurrentPlayer(game_id);

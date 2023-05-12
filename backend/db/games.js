@@ -155,6 +155,32 @@ const updateGameTiles = async (game_id, user_id, tile_id, x, y) => {
   await db.none(UPDATE_GAME_TILES_SQL, [user_id, x, y, game_id, tile_id]);
 };
 
+const TILE_VALUE_SQL = `SELECT point_value FROM canonical_tiles WHERE id=$1`;
+const UPDATE_USER_SCORE_IN_GAME_SQL = `UPDATE game_users SET score = score + $1 WHERE game_id=$2 AND user_id=$3`;
+
+// takes a tile and adds the point_value of the tile to the user's score
+const updateUserScoreInGame = async (game_id, user_id, tile_id) => {
+  // get point value of tile
+  const tilePointValueResult = await db.one(TILE_VALUE_SQL, [tile_id]);
+  const tilePointValue = tilePointValueResult.point_value;
+
+  const oldScore = await getUserScoreInGame(game_id, user_id);
+
+  // update user score based on tile value
+  await db.none(UPDATE_USER_SCORE_IN_GAME_SQL, [
+    tilePointValue,
+    game_id,
+    user_id,
+  ]);
+  await getUserScoreInGame(game_id, user_id);
+};
+
+const GET_USER_SCORE_IN_GAME_SQL = `SELECT user_id, score FROM game_users WHERE game_id=$1 AND user_id=$2`;
+
+const getUserScoreInGame = async (game_id, user_id) => {
+  return await db.one(GET_USER_SCORE_IN_GAME_SQL, [game_id, user_id]);
+};
+
 const GET_NUMBER_OF_TILES_IN_BAG_SQL = `SELECT COUNT(*) FROM game_tiles WHERE game_id=$1 AND user_id=-1`;
 
 const getNumberOfTilesInBag = async (game_id) => {
@@ -210,10 +236,22 @@ const checkUserHasTile = async (user_id, game_id, tile_id) => {
   return result.exists;
 };
 
-const PLAYERS_AND_SCORES_SQL = `SELECT u.username, gu.score FROM game_users gu, users u WHERE gu.game_id=$1 AND gu.user_id=u.id`;
+const PLAYERS_AND_SCORES_SQL = `SELECT u.id, u.username, gu.score FROM game_users gu, users u WHERE gu.game_id=$1 AND gu.user_id=u.id`;
 
 const playersAndScores = async (game_id) => {
   return await db.any(PLAYERS_AND_SCORES_SQL, [game_id]);
+};
+
+const PLAYER_IN_GAME_SQL = `SELECT EXISTS(SELECT * FROM game_users WHERE user_id=$1 AND game_id=$2)`;
+
+const playerInGame = async (user_id, game_id) => {
+  return await db.any(PLAYER_IN_GAME_SQL, [user_id, game_id]);
+};
+
+const USER_CAN_MAKE_TURN_SQL = `SELECT EXISTS(SELECT * FROM game_users WHERE user_id=$1 AND game_id=$2 AND current=true)`;
+
+const userCanMakeTurn = async (userID, gameID) => {
+  return await db.any(USER_CAN_MAKE_TURN_SQL, [userID, gameID]);
 };
 
 module.exports = {
@@ -234,4 +272,8 @@ module.exports = {
   giveTilesFromBagToUser,
   checkUserHasTile,
   playersAndScores,
+  playerInGame,
+  userCanMakeTurn,
+  updateUserScoreInGame,
+  getUserScoreInGame,
 };
