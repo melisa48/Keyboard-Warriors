@@ -2,7 +2,10 @@ const path = require("path");
 
 module.exports = {
   context: path.resolve(__dirname),
-  entry: ["./frontend/lobby.js", "./frontend/game.js"],
+  entry: {
+    lobby: "./frontend/lobby.js",
+    game: "./frontend/game.js",
+  },
   output: {
     path: path.resolve(__dirname, "backend", "static", "scripts"),
     publicPath: "/backend/static/scripts",
