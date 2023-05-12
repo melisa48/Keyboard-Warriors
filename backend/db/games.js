@@ -254,6 +254,42 @@ const userCanMakeTurn = async (userID, gameID) => {
   return await db.any(USER_CAN_MAKE_TURN_SQL, [userID, gameID]);
 };
 
+const CHECK_IF_TILE_ON_BOARD_ALREADY_SQL = `SELECT EXISTS(SELECT * FROM game_tiles WHERE game_id=$1 AND user_id=0 AND x=$2 AND y=$3)`;
+
+const tileOnBoardAlready = async (gameID, x, y) => {
+  // tile is taken if the user_id = 0 (tile is already on the board)
+  const result = await db.one(CHECK_IF_TILE_ON_BOARD_ALREADY_SQL, [
+    gameID,
+    x,
+    y,
+  ]);
+  return result.exists;
+};
+
+const GET_TILE_ON_GAME_BOARD_SQL = `
+SELECT ct.letter
+FROM game_tiles gt, canonical_tiles ct
+WHERE gt.x=$1 AND gt.y=$2 AND gt.user_id=0 AND gt.game_id=$3 AND gt.tile_id=ct.id`;
+
+const getTileOnGameBoard = async (gameID, x, y) => {
+  const tile = await db.any(GET_TILE_ON_GAME_BOARD_SQL, [x, y, gameID]);
+
+  return tile[0].letter;
+};
+
+const FIRST_WORD_PLACED_IN_GAME_SQL = `SELECT EXISTS(SELECT * FROM games WHERE id=$1 AND first_word_placed=true)`;
+
+const firstWordPlacedInGame = async (gameID) => {
+  const result = await db.one(FIRST_WORD_PLACED_IN_GAME_SQL, [gameID]);
+  return result.exists;
+};
+
+const SET_FIRST_WORD_PLACED_TO_TRUE_SQL = `UPDATE games SET first_word_placed=true WHERE id=$1`;
+
+const setFirstWordPlacedToTrue = async (gameID) => {
+  await db.none(SET_FIRST_WORD_PLACED_TO_TRUE_SQL, [gameID]);
+};
+
 module.exports = {
   list,
   create,
@@ -276,4 +312,8 @@ module.exports = {
   userCanMakeTurn,
   updateUserScoreInGame,
   getUserScoreInGame,
+  tileOnBoardAlready,
+  getTileOnGameBoard,
+  firstWordPlacedInGame,
+  setFirstWordPlacedToTrue,
 };
