@@ -1,5 +1,6 @@
 const express = require("express");
 const Games = require("../../db/games");
+const Users = require("../../db/users");
 const { GAME_CREATED } = require("../../../shared/constants");
 
 const router = express.Router();
@@ -45,9 +46,17 @@ router.post("/create", async (request, response) => {
 router.get("/:id/join", async (request, response) => {
   const { id: game_id } = request.params;
   const { id: user_id } = request.session.user;
+  const io = request.app.get("io");
 
   try {
     await Games.join(user_id, game_id);
+
+    const usersInformation = await Users.information(user_id);
+
+    // emit to everyone in the game room that the user joined the waiting list
+    io.sockets
+      .in(game_id)
+      .emit("joined-waiting-list", usersInformation.username);
 
     response.redirect(`/games/${game_id}/waiting-room`);
   } catch (error) {

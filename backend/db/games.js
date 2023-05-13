@@ -34,6 +34,21 @@ const GET_GAME_TILES_OF_GAME_SQL = `SELECT * FROM game_tiles gt, canonical_tiles
 
 const GET_CURRENT_PLAYER_OF_GAME_SQL = `SELECT gu.user_id FROM game_users gu WHERE gu.game_id=$1 AND current=true`;
 
+const SET_STARTED_AT_TIME_SQL = `UPDATE games SET started_at=$1 WHERE id=$2`;
+
+const CHECK_GAME_STARTED_SQL = `SELECT * FROM games WHERE id=$1 AND started_at IS NOT NULL`;
+
+const checkGameStarted = async (game_id) => {
+  const result = await db.oneOrNone(CHECK_GAME_STARTED_SQL, [game_id]);
+
+  return result != undefined;
+};
+
+const setStartedAtTime = async (game_id) => {
+  const now = new Date();
+  await db.none(SET_STARTED_AT_TIME_SQL, [now, game_id]);
+};
+
 const list = async (user_id) => db.any(GAMES_LIST_SQL, [user_id]);
 
 const games_user_is_in = async (user_id) => {
@@ -345,4 +360,6 @@ module.exports = {
   setFirstWordPlacedToTrue,
   getTilePointValue,
   getLetterAndWordMultiplierOfPosition,
+  setStartedAtTime,
+  checkGameStarted,
 };

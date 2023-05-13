@@ -15,10 +15,12 @@ router.get("/create-game", (request, response) => {
 
 router.get("/:id/start-game", requireToBeInGame, async (request, response) => {
   const { id: game_id } = request.params;
+  const io = request.app.get("io");
 
-  // TODO: check if game is already started, if it has, redirect to game page
-
-  // TODO: update started_at field in games table
+  // check if game is already started, if it has, redirect to game page
+  if (await Games.checkGameStarted(game_id)) {
+    return response.redirect(`/games/${game_id}`);
+  }
 
   // get array of canonical tiles
   const canonicalTiles = await Games.getCanonicalTiles();
@@ -55,6 +57,12 @@ router.get("/:id/start-game", requireToBeInGame, async (request, response) => {
     await Games.insertIntoGameTiles(game_id, -1, canonicalTiles[i].id, -1, -1);
   }
 
+  // set started_at time in game
+  await Games.setStartedAtTime(game_id);
+
+  // emit to everyone in game room that the game has started
+  io.sockets.in(game_id).emit("game-started");
+
   response.redirect(`/games/${game_id}`);
 });
 
@@ -63,6 +71,11 @@ router.get(
   requireToBeInGame,
   async (request, response) => {
     const { id: game_id } = request.params;
+
+    // check if game is already started, if it has, redirect to game page
+    if (await Games.checkGameStarted(game_id)) {
+      return response.redirect(`/games/${game_id}`);
+    }
 
     const { game_title, players: playersInGame } = await Games.information(
       game_id
@@ -80,7 +93,11 @@ router.get(
 
 router.get("/:id", requireToBeInGame, async (request, response) => {
   const { id: game_id } = request.params;
-  const { id: user_id } = request.session.user;
+
+  // if game hasn't started yet, go to waiting-room
+  if (!(await Games.checkGameStarted(game_id))) {
+    return response.redirect(`/games/${game_id}/waiting-room`);
+  }
 
   const board = await Games.getBoard();
   const chat = await Chat.getMessages(game_id);
