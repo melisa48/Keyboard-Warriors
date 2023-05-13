@@ -107,7 +107,7 @@ const ensureUserCanMakeTurn = async (userID, gameID) => {
   return userCanMakeTurn[0].exists;
 };
 
-// returns h if horizontal, v if vertical, n if none
+// returns h if horizontal, v if vertical
 const getWordDirection = (tilesPlayed) => {
   const minRow = tilesPlayed.reduce((previous, current) => {
     return previous.boardX < current.boardX ? previous : current;
@@ -131,8 +131,286 @@ const getWordDirection = (tilesPlayed) => {
   } else if (minCol == maxCol) {
     return { direction: "v", minRow: minRow, maxRow: maxRow, wordCol: minCol };
   } else {
-    return { direction: "n" };
+    throw new Error("Word must be in the horizontal or vertical direction!");
   }
+};
+
+// checks that tile positions aren't taken already, and that the
+// tiles touch at least one existing tile on the board
+const verifyTilePositions = async (game_id, tilesPlayed) => {
+  let touchesExistingTile = false;
+
+  for (const tilePlayed of tilesPlayed) {
+    // ensure board position of tile isn't taken already
+    const positionTaken = await Games.tileOnBoardAlready(
+      game_id,
+      tilePlayed.boardX,
+      tilePlayed.boardY
+    );
+    if (positionTaken) {
+      throw new Error("Board position of tile taken already!");
+    }
+
+    // check if current tile touches existing tile on board,
+    // if none of previous tiles touched existing tiles
+    if (!touchesExistingTile) {
+      const leftCheck = await Games.tileOnBoardAlready(
+        game_id,
+        tilePlayed.boardX,
+        tilePlayed.boardY - 1
+      );
+      const upCheck = await Games.tileOnBoardAlready(
+        game_id,
+        tilePlayed.boardX - 1,
+        tilePlayed.boardY
+      );
+      const rightCheck = await Games.tileOnBoardAlready(
+        game_id,
+        tilePlayed.boardX,
+        tilePlayed.boardY + 1
+      );
+      const downCheck = await Games.tileOnBoardAlready(
+        game_id,
+        tilePlayed.boardX + 1,
+        tilePlayed.boardY
+      );
+
+      if (leftCheck || upCheck || rightCheck || downCheck) {
+        // set to true to prevent doing check for a later tile
+        touchesExistingTile = true;
+      }
+    }
+  }
+
+  // if every tile in word placed doesn't touch existing tiles on board
+  if (!touchesExistingTile) {
+    throw new Error("Word doesn't touch existing tiles!");
+  }
+};
+
+const buildHorizontalWord = async (
+  game_id,
+  wordDirection,
+  tilesPlayed,
+  idsOfTilesOnBoardAlready
+) => {
+  let word = "";
+
+  // check the left of the first tile for any board tiles
+  // leftmost tile: (wordDirection.wordRow, wordDirection.minCol)
+  for (let i = wordDirection.minCol - 1; i >= 0; i--) {
+    const tileOnBoardAlready = await Games.tileOnBoardAlready(
+      game_id,
+      wordDirection.wordRow,
+      i
+    );
+    if (tileOnBoardAlready) {
+      const tileOnBoard = await Games.getTileOnGameBoard(
+        game_id,
+        wordDirection.wordRow,
+        i
+      );
+      idsOfTilesOnBoardAlready.push(tileOnBoard.tile_id);
+      word = tileOnBoard.letter + word;
+    } else {
+      break;
+    }
+  }
+
+  // there must be a tile in each column represented by i; if no tile in either
+  // tilesPlayed or DB, fail
+  for (let i = wordDirection.minCol; i <= wordDirection.maxCol; i++) {
+    // check in tilesPlayed & DB for the tile
+    const tilePlayedResult = tilesPlayed.find(
+      (tilePlayed) => tilePlayed.boardY == i
+    );
+    const dbResult = await Games.tileOnBoardAlready(
+      game_id,
+      wordDirection.wordRow,
+      i
+    );
+    if (tilePlayedResult == undefined && !dbResult) {
+      throw new Error("Word isn't continuous along the horizontal direction!");
+    } else if (tilePlayedResult != undefined) {
+      word += tilePlayedResult.letter;
+    } else {
+      // tile is on board already
+
+      // get tile from DB
+      const tileLetter = await Games.getTileOnGameBoard(
+        game_id,
+        wordDirection.wordRow,
+        i
+      );
+      idsOfTilesOnBoardAlready.push(tileLetter.tile_id);
+      word += tileLetter.letter;
+    }
+  }
+
+  // check the right of the last tile for any board tiles
+  // rightmost tile: (wordDirection.wordRow, wordDirection.maxCol)
+  for (let i = wordDirection.maxCol + 1; i <= 14; i++) {
+    const tileOnBoardAlready = await Games.tileOnBoardAlready(
+      game_id,
+      wordDirection.wordRow,
+      i
+    );
+    if (tileOnBoardAlready) {
+      const tileOnBoard = await Games.getTileOnGameBoard(
+        game_id,
+        wordDirection.wordRow,
+        i
+      );
+      idsOfTilesOnBoardAlready.push(tileOnBoard.tile_id);
+      word += tileOnBoard.letter;
+    } else {
+      break;
+    }
+  }
+
+  return word;
+};
+
+const buildVerticalWord = async (
+  game_id,
+  wordDirection,
+  tilesPlayed,
+  idsOfTilesOnBoardAlready
+) => {
+  let word = "";
+
+  // check above the abovemost tile for any board tiles
+  // abovemost tile: (wordDirection.minRow, wordDirection.wordCol)
+  for (let i = wordDirection.minRow - 1; i >= 0; i--) {
+    const tileOnBoardAlready = await Games.tileOnBoardAlready(
+      game_id,
+      i,
+      wordDirection.wordCol
+    );
+    if (tileOnBoardAlready) {
+      const tileOnBoard = await Games.getTileOnGameBoard(
+        game_id,
+        i,
+        wordDirection.wordCol
+      );
+      idsOfTilesOnBoardAlready.push(tileOnBoard.tile_id);
+      word = tileOnBoard.letter + word;
+    } else {
+      break;
+    }
+  }
+
+  // there must be a tile in each row represented by i; if no tile in either
+  // tilesPlayed or DB, fail
+  for (let i = wordDirection.minRow; i <= wordDirection.maxRow; i++) {
+    // check in tilesPlayed & DB for the tile
+    const tilePlayedResult = tilesPlayed.find(
+      (tilePlayed) => tilePlayed.boardX == i
+    );
+    const dbResult = await Games.tileOnBoardAlready(
+      game_id,
+      i,
+      wordDirection.wordCol
+    );
+
+    if (tilePlayedResult == undefined && !dbResult) {
+      throw new Error("Word isn't continuous along the vertical direction!");
+    } else if (tilePlayedResult != undefined) {
+      word += tilePlayedResult.letter;
+    } else {
+      // tile is on board already
+      const tileLetter = await Games.getTileOnGameBoard(
+        game_id,
+        i,
+        wordDirection.wordCol
+      );
+      idsOfTilesOnBoardAlready.push(tileLetter.tile_id);
+      word += tileLetter.letter;
+    }
+  }
+
+  // check below the belowmost tile for any board tiles
+  // belowmost tile: (wordDirection.maxRow, wordDirection.wordCol)
+  for (let i = wordDirection.maxRow + 1; i <= 14; i++) {
+    const tileOnBoardAlready = await Games.tileOnBoardAlready(
+      game_id,
+      i,
+      wordDirection.wordCol
+    );
+    if (tileOnBoardAlready) {
+      const tileOnBoard = await Games.getTileOnGameBoard(
+        game_id,
+        i,
+        wordDirection.wordCol
+      );
+      idsOfTilesOnBoardAlready.push(tileOnBoard.tile_id);
+      word += tileOnBoard.letter;
+    } else {
+      break;
+    }
+  }
+
+  return word;
+};
+
+const buildWord = async (game_id, tilesPlayed) => {
+  const wordDirection = getWordDirection(tilesPlayed);
+
+  let word = "";
+  const idsOfTilesOnBoardAlready = [];
+
+  // if only one tile is played, it can either be in the horizontal or vertical direction
+  if (tilesPlayed.length == 1) {
+    const horizontalWord = await buildHorizontalWord(
+      game_id,
+      {
+        direction: "h",
+        minCol: tilesPlayed[0].boardY,
+        maxCol: tilesPlayed[0].boardY,
+        wordRow: tilesPlayed[0].boardX,
+      },
+      tilesPlayed,
+      idsOfTilesOnBoardAlready
+    );
+
+    const verticalWord = await buildVerticalWord(
+      game_id,
+      {
+        direction: "v",
+        minRow: tilesPlayed[0].boardX,
+        maxRow: tilesPlayed[0].boardX,
+        wordCol: tilesPlayed[0].boardY,
+      },
+      tilesPlayed,
+      idsOfTilesOnBoardAlready
+    );
+
+    if (horizontalWord.length > verticalWord.length) {
+      word = horizontalWord;
+    } else {
+      word = verticalWord;
+    }
+  } else {
+    if (wordDirection.direction == "h") {
+      // build the word horizontally
+      word = await buildHorizontalWord(
+        game_id,
+        wordDirection,
+        tilesPlayed,
+        idsOfTilesOnBoardAlready
+      );
+    } else if (wordDirection.direction == "v") {
+      // build the word vertically
+      word = await buildVerticalWord(
+        game_id,
+        wordDirection,
+        tilesPlayed,
+        idsOfTilesOnBoardAlready
+      );
+    }
+  }
+
+  return { word, idsOfTilesOnBoardAlready };
 };
 
 router.post("/:id/submit-word", async (request, response) => {
@@ -141,6 +419,11 @@ router.post("/:id/submit-word", async (request, response) => {
   const io = request.app.get("io");
 
   const tilesPlayed = request.body;
+
+  // edge case if player clicks button without placing any tiles
+  if (tilesPlayed.length == 0) {
+    return response.status(200).send({});
+  }
 
   try {
     // ensure player is in the game
@@ -166,142 +449,25 @@ router.post("/:id/submit-word", async (request, response) => {
       throw new Error("User doesn't have the tiles!");
     }
 
-    let touchesExistingTile;
-    // if first word not placed on board, set touchesExistingTile to true
+    // ----- check that tiles comply with Scrabble rules -----
+
+    // if first word already placed on board, verify tile positions not taken
+    // and that at least one tile touches existing tiles on board
     const firstWordPlaced = await Games.firstWordPlacedInGame(game_id);
     if (firstWordPlaced) {
-      touchesExistingTile = false;
-    } else {
-      touchesExistingTile = true;
+      await verifyTilePositions(game_id, tilesPlayed).catch((error) => {
+        throw error;
+      });
     }
 
-    // TODO: check that tiles comply with Scrabble rules
+    // build word
+    let { word, idsOfTilesOnBoardAlready } = await buildWord(
+      game_id,
+      tilesPlayed
+    );
 
-    // checks that tile positions aren't taken already, and that the
-    // tiles touch at least one existing tile on the board
-    for (const tilePlayed of tilesPlayed) {
-      // ensure board position of tile isn't taken already
-      const positionTaken = await Games.tileOnBoardAlready(
-        game_id,
-        tilePlayed.boardX,
-        tilePlayed.boardY
-      );
-      if (positionTaken) {
-        throw new Error("Board position of tile taken already!");
-      }
-
-      // check if current tile touches existing tile, if none of previous tiles touched existing tiles
-      if (!touchesExistingTile) {
-        const leftCheck = await Games.tileOnBoardAlready(
-          game_id,
-          tilePlayed.boardX,
-          tilePlayed.boardY - 1
-        );
-        const upCheck = await Games.tileOnBoardAlready(
-          game_id,
-          tilePlayed.boardX - 1,
-          tilePlayed.boardY
-        );
-        const rightCheck = await Games.tileOnBoardAlready(
-          game_id,
-          tilePlayed.boardX,
-          tilePlayed.boardY + 1
-        );
-        const downCheck = await Games.tileOnBoardAlready(
-          game_id,
-          tilePlayed.boardX + 1,
-          tilePlayed.boardY
-        );
-
-        if (leftCheck || upCheck || rightCheck || downCheck) {
-          // set to true to prevent doing check for a later tile
-          touchesExistingTile = true;
-        }
-      }
-    }
-
-    // if every tile in word placed doesn't touch existing tile
-    if (!touchesExistingTile) {
-      throw new Error("Word doesn't touch existing tiles!");
-    }
-
-    // v if vertical, h if horizontal, n if none
-    const wordDirection = getWordDirection(tilesPlayed);
-
-    // word is neither in the horizontal or vertical direction
-    if (wordDirection.direction == "n") {
-      throw new Error("Word must be in the horizontal or vertical direction!");
-    }
-
-    // ensure that no gaps present in word; build word to eventually determine if it is valid
-    let word = "";
-    if (wordDirection.direction == "h") {
-      // TODO: Check the left of the first tile for any board tiles
-
-      // there must be a tile in each column represented by i; if no tile in either
-      // tilesPlayed or DB, fail
-      for (let i = wordDirection.minCol; i <= wordDirection.maxCol; i++) {
-        // check in tilesPlayed & DB for the tile
-        const tilePlayedResult = tilesPlayed.find(
-          (tilePlayed) => tilePlayed.boardY == i
-        );
-        const dbResult = await Games.tileOnBoardAlready(
-          game_id,
-          wordDirection.wordRow,
-          i
-        );
-        if (tilePlayedResult == undefined && !dbResult) {
-          throw new Error(
-            "Word isn't continuous along the horizontal direction!"
-          );
-        } else if (tilePlayedResult != undefined) {
-          word += tilePlayedResult.letter;
-        } else {
-          // get tile from DB
-          const tileLetter = await Games.getTileOnGameBoard(
-            game_id,
-            wordDirection.wordRow,
-            i
-          );
-          word += tileLetter;
-        }
-      }
-    } else if (wordDirection.direction == "v") {
-      // TODO: Check above the first tile for any board tiles
-
-      // there must be a tile in each row represented by i; if no tile in either
-      // tilesPlayed or DB, fail
-      for (let i = wordDirection.minRow; i <= wordDirection.maxRow; i++) {
-        // check in tilesPlayed & DB for the tile
-        const tilePlayedResult = tilesPlayed.find(
-          (tilePlayed) => tilePlayed.boardX == i
-        );
-        const dbResult = await Games.tileOnBoardAlready(
-          game_id,
-          i,
-          wordDirection.wordCol
-        );
-
-        if (tilePlayedResult == undefined && !dbResult) {
-          throw new Error(
-            "Word isn't continuous along the vertical direction!"
-          );
-        } else if (tilePlayedResult != undefined) {
-          word += tilePlayedResult.letter;
-        } else {
-          // get tile from DB
-          const tileLetter = await Games.getTileOnGameBoard(
-            game_id,
-            i,
-            wordDirection.wordCol
-          );
-          word += tileLetter;
-        }
-      }
-    }
-
-    // check if word is valid
-    console.log(`Word: ${word}`);
+    // check if word is valid (in the Scrabble dictionary)
+    word = word.replace(/\s/g, ""); // replace spaces with non-spaces
     if (!scrabbleWords.has(word)) {
       throw new Error(`${word} isn't a valid word.`);
     }
@@ -311,8 +477,21 @@ router.post("/:id/submit-word", async (request, response) => {
       await Games.setFirstWordPlacedToTrue(game_id);
     }
 
-    // update game tiles table with each tile placed &
-    // update user's score in game_users
+    // track total score, to accurately give word multiplier rewards
+    let totalScore = 0;
+
+    // add scores of tiles already placed on board
+    for (let i = 0; i < idsOfTilesOnBoardAlready.length; i++) {
+      const tileValue = await Games.getTilePointValue(
+        idsOfTilesOnBoardAlready[i]
+      );
+      totalScore += tileValue;
+    }
+
+    // will be used to multiply totalScore
+    let wordMultiplier = 1;
+
+    // update game tiles table with each tile placed & multiply based on special tiles
     for (const tilePlayed of tilesPlayed) {
       // user_id is 0 as it is placed on the board
       await Games.updateGameTiles(
@@ -323,13 +502,35 @@ router.post("/:id/submit-word", async (request, response) => {
         tilePlayed.boardY
       );
 
-      // update the user's score with each tile's point value
-      await Games.updateUserScoreInGame(
-        game_id,
-        user_id,
+      // get letter and word multiplier of tile position
+      const letterAndWordMultiplier =
+        await Games.getLetterAndWordMultiplierOfPosition(
+          tilePlayed.boardX,
+          tilePlayed.boardY
+        );
+
+      // set word multiplier
+      if (letterAndWordMultiplier.word_multiplier > wordMultiplier) {
+        wordMultiplier = letterAndWordMultiplier.word_multiplier;
+      }
+
+      // add tile point value, multiplied by letter multiplier
+      const tilePointValue = await Games.getTilePointValue(
         tilePlayed.canonicalTileID
       );
+      totalScore += tilePointValue * letterAndWordMultiplier.letter_multiplier;
     }
+
+    // multiply total score by word multiplier
+    totalScore *= wordMultiplier;
+
+    // bingo reward
+    if (tilesPlayed.length == 7) {
+      totalScore += 50;
+    }
+
+    // update user score
+    await Games.updateUserScoreInGame(game_id, user_id, totalScore);
 
     // emit the player's id and their new score to the room
     const newPlayerScore = await Games.getUserScoreInGame(game_id, user_id);

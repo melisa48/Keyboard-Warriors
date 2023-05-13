@@ -155,24 +155,51 @@ const updateGameTiles = async (game_id, user_id, tile_id, x, y) => {
   await db.none(UPDATE_GAME_TILES_SQL, [user_id, x, y, game_id, tile_id]);
 };
 
-const TILE_VALUE_SQL = `SELECT point_value FROM canonical_tiles WHERE id=$1`;
-const UPDATE_USER_SCORE_IN_GAME_SQL = `UPDATE game_users SET score = score + $1 WHERE game_id=$2 AND user_id=$3`;
+// takes a tile and adds the point_value of the tile to the user's score; returns point value of tile
+// const updateUserScoreInGame = async (game_id, user_id, tile_id) => {
+//   // get point value of tile
+//   const tilePointValueResult = await db.one(TILE_VALUE_SQL, [tile_id]);
+//   const tilePointValue = tilePointValueResult.point_value;
 
-// takes a tile and adds the point_value of the tile to the user's score
-const updateUserScoreInGame = async (game_id, user_id, tile_id) => {
-  // get point value of tile
-  const tilePointValueResult = await db.one(TILE_VALUE_SQL, [tile_id]);
-  const tilePointValue = tilePointValueResult.point_value;
+//   // TODO: also take in x and y position of the tile on the board; multiply
+//   // tilePointValue by the letter multiplier of that x and y position
 
-  const oldScore = await getUserScoreInGame(game_id, user_id);
+//   // update user score based on tile value
+//   await db.none(UPDATE_USER_SCORE_IN_GAME_SQL, [
+//     tilePointValue,
+//     game_id,
+//     user_id,
+//   ]);
 
+//   return tilePointValue;
+// };
+
+const GET_LETTER_AND_WORD_MULTIPLIER_OF_POSITION_SQL = `
+SELECT letter_multiplier, word_multiplier
+FROM board WHERE x=$1 AND y=$2`;
+
+const getLetterAndWordMultiplierOfPosition = async (x, y) => {
+  return await db.one(GET_LETTER_AND_WORD_MULTIPLIER_OF_POSITION_SQL, [x, y]);
+};
+
+const GET_TILE_POINT_VALUE_SQL = `SELECT point_value FROM canonical_tiles WHERE id=$1`;
+
+const getTilePointValue = async (tile_id) => {
+  const tilePointValueResult = await db.one(GET_TILE_POINT_VALUE_SQL, [
+    tile_id,
+  ]);
+  // console.log(tilePointValueResult);
+  return tilePointValueResult.point_value;
+};
+
+const UPDATE_USER_SCORE_IN_GAME_SQL = `UPDATE game_users SET score = score + $3 WHERE game_id=$1 AND user_id=$2`;
+const updateUserScoreInGame = async (game_id, user_id, points_to_add) => {
   // update user score based on tile value
   await db.none(UPDATE_USER_SCORE_IN_GAME_SQL, [
-    tilePointValue,
     game_id,
     user_id,
+    points_to_add,
   ]);
-  await getUserScoreInGame(game_id, user_id);
 };
 
 const GET_USER_SCORE_IN_GAME_SQL = `SELECT user_id, score FROM game_users WHERE game_id=$1 AND user_id=$2`;
@@ -267,14 +294,14 @@ const tileOnBoardAlready = async (gameID, x, y) => {
 };
 
 const GET_TILE_ON_GAME_BOARD_SQL = `
-SELECT ct.letter
+SELECT gt.tile_id, ct.letter
 FROM game_tiles gt, canonical_tiles ct
 WHERE gt.x=$1 AND gt.y=$2 AND gt.user_id=0 AND gt.game_id=$3 AND gt.tile_id=ct.id`;
 
 const getTileOnGameBoard = async (gameID, x, y) => {
   const tile = await db.any(GET_TILE_ON_GAME_BOARD_SQL, [x, y, gameID]);
 
-  return tile[0].letter;
+  return tile[0];
 };
 
 const FIRST_WORD_PLACED_IN_GAME_SQL = `SELECT EXISTS(SELECT * FROM games WHERE id=$1 AND first_word_placed=true)`;
@@ -316,4 +343,6 @@ module.exports = {
   getTileOnGameBoard,
   firstWordPlacedInGame,
   setFirstWordPlacedToTrue,
+  getTilePointValue,
+  getLetterAndWordMultiplierOfPosition,
 };
