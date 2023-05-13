@@ -5,6 +5,7 @@ module.exports = {
   entry: {
     lobby: "./frontend/lobby.js",
     game: "./frontend/game.js",
+    waiting_room: "./frontend/waiting_room.js",
   },
   output: {
     path: path.resolve(__dirname, "backend", "static", "scripts"),

@@ -37,7 +37,12 @@ export function configureSubmitButton(gameButtonsContainer, gameID) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(tilesPlayed),
     })
-      .then((newTiles) => {
+      .then(async (newTiles) => {
+        if (!newTiles.ok) {
+          const errorMessage = await newTiles.text();
+          throw new Error(errorMessage);
+        }
+
         // remove played tiles from board
         boardSquaresWithPlayerTile.forEach((boardSquareWithPlayerTile) => {
           const playerTile =
@@ -48,6 +53,9 @@ export function configureSubmitButton(gameButtonsContainer, gameID) {
         return newTiles.json();
       })
       .then((newTiles) => {
+        // put the new tiles returned from the server on the tile boxes
+        // that are missing a tile in the user's rack
+
         const tileBoxElements = document.getElementsByClassName("tile-box");
 
         let iterator = 0;
@@ -75,7 +83,9 @@ export function configureSubmitButton(gameButtonsContainer, gameID) {
         }
       })
       .catch((error) => {
-        console.log(error);
+        // in case of an error, alert the user of their error and reload the page
+        alert(JSON.parse(error.message).message);
+        location.reload();
       });
   });
 }

@@ -86,3 +86,9 @@ socket.on("current-player", (currentPlayer) => {
     }
   }
 });
+
+socket.on("player-score-updated", (newPlayerScore) => {
+  const playerDiv = document.querySelector(".player-" + newPlayerScore.user_id);
+  const scoreDiv = playerDiv.querySelector(".score");
+  scoreDiv.textContent = newPlayerScore.score;
+});
