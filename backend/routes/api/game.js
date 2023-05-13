@@ -149,4 +149,70 @@ router.post("/:id/submit-word", async (request, response) => {
   }
 });
 
+// Resign Functionality 
+router.put('/:id/resign', async (req, res) => {
+  // Ensure that the player is in the game
+  const gameUser = await GameUser.findOne({
+      where: {
+          gameId: req.params.id,
+          userId: req.body.userId
+      }
+  });
+  if (!gameUser) {
+      return res.status(400).json({
+          message: "The player is not in the game"
+      });
+  }
+
+  // Ensure it is their turn
+  if (gameUser.playerTurn !== true) {
+      return res.status(400).json({
+          message: "It is not currently the player's turn"
+      });
+  }
+
+  // Set their score to -1
+  await gameUser.score(-1);
+
+  // Set the player resigned to true
+  gameUser.resigned = true;
+  await gameUser.save();
+
+  // Count number of players in game (originally) and number of resigned players
+  const numPlayers = await GameUser.count({
+      where: {
+          gameId: req.params.id
+      }
+  });
+  const numResignedPlayers = await GameUser.count({
+      where: {
+          gameId: req.params.id,
+          resigned: true
+      }
+  });
+
+  // If result is 1: game ends (because only 1 player in the game now)
+  if (numPlayers - numResignedPlayers === 1) {
+      // End the game
+      const game = await Game.findByPk(req.params.id);
+      game.status = "ended";
+      await game.save();
+  } else {
+      // Give next player the turn
+      await GameUser.update({
+          playerTurn: true
+      }, {
+          where: {
+              gameId: req.params.id,
+              playerTurn: false
+          }
+      });
+  }
+
+  // Return success
+  res.status(200).json({
+      message: "The player has resigned"
+  });
+});
+
 module.exports = router;
