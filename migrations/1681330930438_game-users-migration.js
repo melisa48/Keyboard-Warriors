@@ -24,6 +24,10 @@ exports.up = (pgm) => {
     play_order: {
       type: "integer",
     },
+    resigned: {
+      type: "boolean",
+      default: false,
+    },
   });
 };
 

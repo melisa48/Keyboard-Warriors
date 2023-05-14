@@ -28,6 +28,10 @@ exports.up = (pgm) => {
     started_at: {
       type: "timestamp",
     },
+    game_ended: {
+      type: "boolean",
+      default: false,
+    },
   });
 };
 
