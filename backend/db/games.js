@@ -1,266 +1,79 @@
 const db = require("./connection");
 
+const GAME_INFORMATION_SQL = `SELECT * FROM games WHERE id=$1`;
+
+const SET_GAME_ENDED_SQL = `UPDATE games SET game_ended=true WHERE id=$1`;
+
 const CREATE_GAME_SQL =
   "INSERT INTO games (title, player_count) VALUES ($1, $2) RETURNING id, created_at";
 
-const INSERT_USER_IN_GAME_SQL =
-  "INSERT INTO game_users (game_id, user_id, current, play_order) VALUES ($1, $2, $3, $4)";
-
 const GAMES_LIST_SQL = `
-  SELECT g.id, g.title, g.created_at FROM games g WHERE g.id NOT IN
-    (SELECT gu.game_id FROM game_users gu WHERE gu.user_id = $1) AND
-  (SELECT COUNT(*) FROM game_users WHERE game_users.game_id=g.id) < g.player_count`;
-
-const NUMBER_OF_PLAYERS_IN_GAME_SQL =
-  "SELECT COUNT(*) FROM game_users WHERE game_id = $1";
-
-const GAME_TITLE_SQL = `SELECT title FROM games WHERE id=$1`;
-
-const PLAYERS_IN_GAME_SQL = `SELECT u.id, u.username FROM users u WHERE u.id IN 
-  (SELECT gu.user_id FROM game_users gu WHERE gu.game_id = $1)`;
+SELECT g.id, g.title, g.created_at FROM games g WHERE g.id NOT IN
+  (SELECT gu.game_id FROM game_users gu WHERE gu.user_id = $1) AND
+(SELECT COUNT(*) FROM game_users WHERE game_users.game_id=g.id) < g.player_count`;
 
 const GAMES_USER_IS_IN_SQL = `SELECT gu.game_id, g.title FROM game_users gu, games g
   WHERE gu.game_id = g.id AND gu.user_id=$1`;
 
-const CHECK_USER_IN_GAME_SQL = `SELECT EXISTS(SELECT 1 FROM game_users gu WHERE user_id=$1 AND game_id=$2)`;
+const SET_STARTED_AT_TIME_SQL = `UPDATE games SET started_at=$1 WHERE id=$2`;
 
-const GAME_BOARD_SQL = `SELECT * FROM board;`;
+const CHECK_GAME_STARTED_SQL = `SELECT * FROM games WHERE id=$1 AND started_at IS NOT NULL`;
 
-const CANONICAL_TILES_SQL = `SELECT * FROM canonical_tiles;`;
+const SET_FIRST_WORD_PLACED_TO_TRUE_SQL = `UPDATE games SET first_word_placed=true WHERE id=$1`;
 
-const INSERT_TILE_IN_GAME_TILES = `INSERT INTO game_tiles (game_id, user_id, tile_id, x, y) VALUES ($1, $2, $3, $4, $5)`;
+const FIRST_WORD_PLACED_IN_GAME_SQL = `SELECT EXISTS(SELECT * FROM games WHERE id=$1 AND first_word_placed=true)`;
 
-const GET_GAME_TILES_OF_GAME_SQL = `SELECT * FROM game_tiles gt, canonical_tiles ct WHERE gt.game_id=$1 AND gt.tile_id = ct.id`;
-
-const GET_CURRENT_PLAYER_OF_GAME_SQL = `SELECT gu.user_id FROM game_users gu WHERE gu.game_id=$1 AND current=true`;
-
-const list = async (user_id) => db.any(GAMES_LIST_SQL, [user_id]);
-
-const games_user_is_in = async (user_id) => {
-  return db.any(GAMES_USER_IS_IN_SQL, [user_id]);
+const gameInformation = async (game_id) => {
+  return await db.one(GAME_INFORMATION_SQL, [game_id]);
 };
 
-const check_user_in_game = async (user_id, game_id) => {
-  const result = await db.oneOrNone(CHECK_USER_IN_GAME_SQL, [user_id, game_id]);
-  return result.exists;
+const setGameEnded = async (game_id) => {
+  await db.none(SET_GAME_ENDED_SQL, [game_id]);
 };
 
-const create = async (user_id, game_title, number_of_players) => {
+const create = async (game_title, number_of_players) => {
   const { id: game_id } = await db.one(CREATE_GAME_SQL, [
     game_title,
     number_of_players,
   ]);
 
-  await db.none(INSERT_USER_IN_GAME_SQL, [game_id, user_id, true, 1]);
-
   return { game_id };
 };
 
-const join = async (user_id, game_id) => {
-  const { count: numberOfPlayers } = await db.one(
-    NUMBER_OF_PLAYERS_IN_GAME_SQL,
-    [game_id]
-  );
+const list = async (user_id) => db.any(GAMES_LIST_SQL, [user_id]);
 
-  db.none(INSERT_USER_IN_GAME_SQL, [
-    game_id,
-    user_id,
-    false,
-    parseInt(numberOfPlayers) + 1,
-  ]);
+const gamesUserIsIn = async (user_id) => {
+  return db.any(GAMES_USER_IS_IN_SQL, [user_id]);
 };
 
-const information = async (game_id) => {
-  const { title: game_title } = await db.one(GAME_TITLE_SQL, [game_id]);
-  const players = await db.any(PLAYERS_IN_GAME_SQL, [game_id]);
-
-  return { game_title, players };
+const setStartedAtTime = async (game_id) => {
+  const now = new Date();
+  await db.none(SET_STARTED_AT_TIME_SQL, [now, game_id]);
 };
 
-const getBoard = async () => {
-  return await db.any(GAME_BOARD_SQL);
+const checkGameStarted = async (game_id) => {
+  const result = await db.oneOrNone(CHECK_GAME_STARTED_SQL, [game_id]);
+
+  return result != undefined;
 };
 
-const getCanonicalTiles = async () => {
-  return await db.any(CANONICAL_TILES_SQL);
+const setFirstWordPlacedToTrue = async (gameID) => {
+  await db.none(SET_FIRST_WORD_PLACED_TO_TRUE_SQL, [gameID]);
 };
 
-const insertIntoGameTiles = async (game_id, user_id, tile_id, x, y) => {
-  await db.none(INSERT_TILE_IN_GAME_TILES, [game_id, user_id, tile_id, x, y]);
-};
-
-const getGameTiles = async (game_id) => {
-  return await db.any(GET_GAME_TILES_OF_GAME_SQL, game_id);
-};
-
-const getCurrentPlayerOfGame = async (game_id) => {
-  return await db.one(GET_CURRENT_PLAYER_OF_GAME_SQL, [game_id]);
-};
-
-const GET_CURRENT_PLAYER_PLAY_ORDER_SQL = `SELECT gu.play_order FROM game_users gu WHERE game_id=$1 AND user_id=$2`;
-
-const SET_CURRENT_PLAYER_SQL = `UPDATE game_users gu SET current=$1 WHERE game_id=$2 AND user_id=$3`;
-const USER_ID_OF_NEXT_CURRENT_PLAYER_SQL = `SELECT gu.user_id FROM game_users gu WHERE game_id=$1 AND play_order=$2`;
-
-const setAndGetNewCurrentPlayer = async (game_id) => {
-  const currentPlayer = await getCurrentPlayerOfGame(game_id);
-
-  // get the current player's play order
-  const currentPlayerPlayOrder = await db.one(
-    GET_CURRENT_PLAYER_PLAY_ORDER_SQL,
-    [game_id, currentPlayer.user_id]
-  );
-
-  // set current player's current field to false
-  await db.none(SET_CURRENT_PLAYER_SQL, [
-    false,
-    game_id,
-    currentPlayer.user_id,
-  ]);
-
-  // get number of players in the game
-  const { count: numberOfPlayersInGame } = await db.one(
-    NUMBER_OF_PLAYERS_IN_GAME_SQL,
-    [game_id]
-  );
-
-  // get play order of next current player
-  // TODO: use a while loop to get the next non-resigned player;
-  let playOrderOfNextCurrentPlayer;
-  if (currentPlayerPlayOrder.play_order == numberOfPlayersInGame) {
-    playOrderOfNextCurrentPlayer = 1;
-  } else {
-    playOrderOfNextCurrentPlayer = currentPlayerPlayOrder.play_order + 1;
-  }
-
-  // get id of this next current player
-  const userIdOfNextCurrentPlayer = await db.one(
-    USER_ID_OF_NEXT_CURRENT_PLAYER_SQL,
-    [game_id, playOrderOfNextCurrentPlayer]
-  );
-
-  // set new current player
-  await db.none(SET_CURRENT_PLAYER_SQL, [
-    true,
-    game_id,
-    userIdOfNextCurrentPlayer.user_id,
-  ]);
-
-  return userIdOfNextCurrentPlayer;
-};
-
-
-const resign = async (game_id, user_id) => {
-  // Ensure that the player is in the game
-  const userInGame = await check_user_in_game(user_id, game_id);
-  if (!userInGame) {
-    throw new Error("Player is not in the game.");
-  }
-
-  // Ensure that it is the player's turn
-  const currentPlayer = await getCurrentPlayerOfGame(game_id);
-  if (currentPlayer.user_id !== user_id) {
-    throw new Error("It is not the player's turn.");
-  }
-
-  // Set the player's score to -1 in game_users
-  await db.none("UPDATE game_users SET score = -1 WHERE game_id = $1 AND user_id = $2", [game_id, user_id]);
-
-  // Set the player's resigned field to true in game_users
-  await db.none("UPDATE game_users SET resigned = true WHERE game_id = $1 AND user_id = $2", [game_id, user_id]);
-
-  // Count the number of players in the game (originally) and the number of resigned players
-  const { count: numberOfPlayers } = await db.one(NUMBER_OF_PLAYERS_IN_GAME_SQL, [game_id]);
-  const { count: numberOfResignedPlayers } = await db.one("SELECT COUNT(*) FROM game_users WHERE game_id = $1 AND resigned = true", [game_id]);
-  const remainingPlayers = numberOfPlayers - numberOfResignedPlayers;
-
-  // If there is only 1 player remaining, end the game
-  if (remainingPlayers === 1) {
-    // Game ends because only 1 player is in the game now
-    // Perform any necessary actions to end the game
-  } else {
-    // Otherwise, give the next player the turn
-    await setAndGetNewCurrentPlayer(game_id);
-  }
-};
-
-const UPDATE_GAME_TILES_SQL = `UPDATE game_tiles SET user_id=$1, x=$2, y=$3 WHERE game_id=$4 AND tile_id=$5`;
-
-const updateGameTiles = async (game_id, user_id, tile_id, x, y) => {
-  await db.none(UPDATE_GAME_TILES_SQL, [user_id, x, y, game_id, tile_id]);
-};
-
-const GET_NUMBER_OF_TILES_IN_BAG_SQL = `SELECT COUNT(*) FROM game_tiles WHERE game_id=$1 AND user_id=-1`;
-
-const getNumberOfTilesInBag = async (game_id) => {
-  return await db.one(GET_NUMBER_OF_TILES_IN_BAG_SQL, [game_id]);
-};
-
-const GET_TILES_FROM_BAG_SQL = `SELECT tile_id FROM game_tiles WHERE game_id=$1 AND user_id=-1 ORDER BY random() LIMIT $2`;
-const GIVE_TILES_FROM_BAG_TO_USER_SQL = `
-  UPDATE game_tiles
-  SET user_id=$1
-  WHERE game_id=$2 AND tile_id = ANY ($3)
-  RETURNING tile_id`;
-
-const giveTilesFromBagToUser = async (user_id, game_id, number_of_tiles) => {
-  // get number_of_tiles from bag
-  const tilesFromBag = await db.any(GET_TILES_FROM_BAG_SQL, [
-    game_id,
-    number_of_tiles,
-  ]);
-
-  let arrayOfTilesFromBag = [];
-  tilesFromBag.forEach((tileFromBag) => {
-    arrayOfTilesFromBag.push(tileFromBag.tile_id);
-  });
-
-  const newTileIDsForPlayer = await db.any(GIVE_TILES_FROM_BAG_TO_USER_SQL, [
-    user_id,
-    game_id,
-    arrayOfTilesFromBag,
-  ]);
-
-  let arrayOfTileIdsForPlayer = [];
-  newTileIDsForPlayer.forEach((newTileIDForPlayer) => {
-    arrayOfTileIdsForPlayer.push(newTileIDForPlayer.tile_id);
-  });
-
-  const canonicalInformationAboutTiles = await db.any(
-    `SELECT id, letter FROM canonical_tiles WHERE id = ANY ($1)`,
-    [arrayOfTileIdsForPlayer]
-  );
-
-  return canonicalInformationAboutTiles;
-};
-
-const CHECK_USER_HAS_TILE_SQL = `SELECT EXISTS(SELECT * FROM game_tiles WHERE user_id=$1 AND game_id=$2 AND tile_id=$3)`;
-
-const checkUserHasTile = async (user_id, game_id, tile_id) => {
-  const result = await db.one(CHECK_USER_HAS_TILE_SQL, [
-    user_id,
-    game_id,
-    tile_id,
-  ]);
+const firstWordPlacedInGame = async (gameID) => {
+  const result = await db.one(FIRST_WORD_PLACED_IN_GAME_SQL, [gameID]);
   return result.exists;
 };
 
 module.exports = {
+  gameInformation,
+  setGameEnded,
   list,
   create,
-  join,
-  information,
-  getBoard,
-  games_user_is_in,
-  check_user_in_game,
-  getCanonicalTiles,
-  insertIntoGameTiles,
-  getGameTiles,
-  getCurrentPlayerOfGame,
-  setAndGetNewCurrentPlayer,
-  updateGameTiles,
-  getNumberOfTilesInBag,
-  giveTilesFromBagToUser,
-  checkUserHasTile,
-  resign,
+  gamesUserIsIn,
+  firstWordPlacedInGame,
+  setFirstWordPlacedToTrue,
+  setStartedAtTime,
+  checkGameStarted,
 };

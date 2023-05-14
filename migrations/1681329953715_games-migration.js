@@ -21,8 +21,16 @@ exports.up = (pgm) => {
       notNull: true,
       default: pgm.func("current_timestamp"),
     },
+    first_word_placed: {
+      type: "boolean",
+      default: false,
+    },
     started_at: {
       type: "timestamp",
+    },
+    game_ended: {
+      type: "boolean",
+      default: false,
     },
   });
 };

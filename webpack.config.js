@@ -1,11 +1,12 @@
 const path = require("path");
 
 module.exports = {
-  entry: "./frontend/index.js",
+  context: path.resolve(__dirname),
+  entry: [],
   output: {
-    path: path.join(__dirname, "backend", "static", "scripts"),
+    path: path.resolve(__dirname, "backend", "static", "scripts"),
     publicPath: "/backend/static/scripts",
-    filename: "bundle.js"
+    filename: "[name]-bundle.js",
   },
   mode: "production",
   module: {
@@ -13,8 +14,11 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use: { loader: "babel-loader" }
-      }
-    ]
-  }
-}
+        use: { loader: "babel-loader" },
+      },
+    ],
+  },
+  resolve: {
+    extensions: [".js"],
+  },
+};

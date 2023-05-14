@@ -62,7 +62,11 @@
           <button id="submitButton">Submit</button>
         </div>
       </div>
-      <%- include('partials/chat.ejs') %>
+      <div class="chat-and-players" style="width: 50%">
+        <%- include('partials/chat.ejs') %>
+        
+        <%- include('./partials/players-and-scores', { playersAndScores: playersAndScores }); %>
+      </div>
     </div>
   </div>
   <div>
@@ -100,6 +104,7 @@
       }
     }
   </script>
+  <script src="/scripts/game-bundle.js"></script>
   </div>
 </body>
 

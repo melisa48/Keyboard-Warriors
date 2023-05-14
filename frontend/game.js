@@ -2,6 +2,7 @@ import socket from "./common_utilities/socket";
 import getGameId from "../shared/get-game-id";
 import { chatItemCreatedHandler } from "./common_utilities/chat";
 import { configureSubmitButton } from "./games/submit";
+import { configureResignButton } from "./games/resign";
 
 const gameID = getGameId(document.location.pathname);
 const userID = document.querySelector("#user").dataset.userId;
@@ -16,6 +17,7 @@ const gameButtons = gameButtonsContainer.querySelectorAll("button");
 
 chatItemCreatedHandler(socket);
 configureSubmitButton(gameButtonsContainer, gameID);
+configureResignButton(gameButtonsContainer, gameID);
 
 function placeTileOnBoard(x, y, id, letter) {
   const boardSquare = document.querySelector(
@@ -56,7 +58,7 @@ socket.on("board-updated", (newTiles) => {
 });
 
 // enable/disable parts of game depending on if user is the current player or not
-socket.on("current-player", (currentPlayer) => {
+socket.on("current-player", (current_player_id) => {
   // if user isn't current player:
   // make tiles not draggable
   // disable game buttons
@@ -64,7 +66,7 @@ socket.on("current-player", (currentPlayer) => {
   // make tiles draggable
   // enable game buttons
 
-  if (parseInt(currentPlayer.user_id) == userID) {
+  if (parseInt(current_player_id) == userID) {
     // user is current player
 
     gameButtons.forEach((button) => {
@@ -93,26 +95,6 @@ socket.on("player-score-updated", (newPlayerScore) => {
   scoreDiv.textContent = newPlayerScore.score;
 });
 
-// Resign Functionality 
-async function resign() {
-    try {
-        const response = await axios.put(`/api/games/${gameId}/resign`, {
-            userId: userId
-        });
-        if (response.status === 200) {
-            console.log(response.data.message);
-            // Update game state
-            // ...
-        } else {
-            console.log(response.data.message);
-        }
-    } catch (error) {
-        console.error(error);
-    }
- }
- 
- // Call resign function when resign button is clicked
- // ...
-  
- 
- 
+socket.on("game-ended", () => {
+  window.location.pathname = `/games/${gameID}/game-end`;
+});
