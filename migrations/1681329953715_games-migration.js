@@ -15,6 +15,7 @@ exports.up = (pgm) => {
     },
     pass_count: {
       type: "integer",
+      default: 0,
     },
     created_at: {
       type: "timestamp",
