@@ -565,4 +565,51 @@ router.post("/:id/submit-word", async (request, response) => {
   }
 });
 
+router.post("/:id/pass-turn", async (request, response) => {
+  const { id: game_id } = request.params;
+  const { id: user_id } = request.session.user;
+  const io = request.app.get("io");
+
+  try {
+    // ensure player is in the game
+    const userInGame = await ensureUserInGame(user_id, game_id);
+    if (!userInGame) {
+      throw new Error("User not in game!");
+    }
+    // check if the player can make a turn
+    const userCanMakeTurn = await ensureUserCanMakeTurn(user_id, game_id);
+    if (!userCanMakeTurn) {
+      throw new Error("User can't make turn!");
+    }
+
+    //Collect player count and number of passes thus far from game
+    const { player_count, pass_count } = await Games.getGamePlayerAndPassCount(
+      game_id
+    );
+    if (!player_count || pass_count < 0) {
+      throw new Error("Error fetching player count and current pass count.");
+    }
+    //Trigger  end of game
+    if (player_count * 2 - 1 <= pass_count) {
+      console.log(
+        "GAME IS OVER. TODO Send everyone to Ending Game page. Players: " +
+          player_count +
+          " Skips: " +
+          pass_count
+      );
+      //TODO Send everyone to Ending Game page.
+    } else {
+      //Increment pass count and turn control to next player.
+      await Games.setGamePassCount(pass_count + 1, game_id);
+      // get and set new current player & emit to room
+      const newCurrentPlayer = await Games.setAndGetNewCurrentPlayer(game_id);
+      io.sockets.in(game_id).emit("current-player", newCurrentPlayer);
+    }
+
+    response.status(200);
+  } catch (error) {
+    response.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;
