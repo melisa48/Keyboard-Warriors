@@ -2,6 +2,7 @@ import socket from "./common_utilities/socket";
 import getGameId from "../shared/get-game-id";
 import { chatItemCreatedHandler } from "./common_utilities/chat";
 import { configureSubmitButton } from "./games/submit";
+import { configurePassButton } from "./games/pass";
 
 const gameID = getGameId(document.location.pathname);
 const userID = document.querySelector("#user").dataset.userId;
@@ -16,6 +17,7 @@ const gameButtons = gameButtonsContainer.querySelectorAll("button");
 
 chatItemCreatedHandler(socket);
 configureSubmitButton(gameButtonsContainer, gameID);
+configurePassButton(gameButtonsContainer, gameID);
 
 function placeTileOnBoard(x, y, id, letter) {
   const boardSquare = document.querySelector(

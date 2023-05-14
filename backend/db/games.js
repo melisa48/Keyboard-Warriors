@@ -332,6 +332,18 @@ const setFirstWordPlacedToTrue = async (gameID) => {
   await db.none(SET_FIRST_WORD_PLACED_TO_TRUE_SQL, [gameID]);
 };
 
+const SET_GAME_PASS_COUNT_SQL = `UPDATE games SET pass_count=$1 WHERE id=$2`;
+const setGamePassCount = async (count, gameID) => {
+  // update pass count to new value
+  await db.none(SET_GAME_PASS_COUNT_SQL, [count, gameID]);
+};
+
+const GET_GAME_PLAYER_AND_PASS_SQL = `SELECT player_count, pass_count FROM games WHERE id=$1`;
+const getGamePlayerAndPassCount = async (gameID) => {
+  //Returns the game's current skip value.
+  return await db.oneOrNone(GET_GAME_PLAYER_AND_PASS_SQL, [gameID]);
+};
+
 module.exports = {
   list,
   create,
@@ -362,4 +374,6 @@ module.exports = {
   getLetterAndWordMultiplierOfPosition,
   setStartedAtTime,
   checkGameStarted,
+  setGamePassCount,
+  getGamePlayerAndPassCount,
 };
