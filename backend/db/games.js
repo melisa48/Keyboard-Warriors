@@ -25,8 +25,6 @@ const FIRST_WORD_PLACED_IN_GAME_SQL = `SELECT EXISTS(SELECT * FROM games WHERE i
 
 const SET_GAME_PASS_COUNT_SQL = `UPDATE games SET pass_count=$1 WHERE id=$2`;
 
-const GET_GAME_PLAYER_AND_PASS_SQL = `SELECT player_count, pass_count FROM games WHERE id=$1`;
-
 const gameInformation = async (game_id) => {
   return await db.one(GAME_INFORMATION_SQL, [game_id]);
 };
@@ -74,10 +72,6 @@ const setGamePassCount = async (count, gameID) => {
   await db.none(SET_GAME_PASS_COUNT_SQL, [count, gameID]);
 };
 
-const getGamePlayerAndPassCount = async (gameID) => {
-  return await db.oneOrNone(GET_GAME_PLAYER_AND_PASS_SQL, [gameID]);
-};
-
 module.exports = {
   gameInformation,
   setGameEnded,
@@ -89,5 +83,4 @@ module.exports = {
   setStartedAtTime,
   checkGameStarted,
   setGamePassCount,
-  getGamePlayerAndPassCount,
 };

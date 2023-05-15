@@ -210,25 +210,25 @@
         (y.prototype.hasListeners = function (t) {
           return !!this.listeners(t).length;
         });
-      const m =
+      const g =
         "undefined" != typeof self
           ? self
           : "undefined" != typeof window
           ? window
           : Function("return this")();
-      function g(t, ...e) {
+      function m(t, ...e) {
         return e.reduce(
           (e, s) => (t.hasOwnProperty(s) && (e[s] = t[s]), e),
           {}
         );
       }
-      const b = m.setTimeout,
-        v = m.clearTimeout;
+      const b = g.setTimeout,
+        v = g.clearTimeout;
       function w(t, e) {
         e.useNativeTimers
-          ? ((t.setTimeoutFn = b.bind(m)), (t.clearTimeoutFn = v.bind(m)))
-          : ((t.setTimeoutFn = m.setTimeout.bind(m)),
-            (t.clearTimeoutFn = m.clearTimeout.bind(m)));
+          ? ((t.setTimeoutFn = b.bind(g)), (t.clearTimeoutFn = v.bind(g)))
+          : ((t.setTimeoutFn = g.setTimeout.bind(g)),
+            (t.clearTimeoutFn = g.clearTimeout.bind(g)));
       }
       class k extends Error {
         constructor(t, e, s) {
@@ -284,15 +284,15 @@
           "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_".split(
             ""
           ),
-        C = 64,
-        A = {};
+        A = 64,
+        C = {};
       let T,
         O = 0,
         R = 0;
       function S(t) {
         let e = "";
         do {
-          (e = E[t % C] + e), (t = Math.floor(t / C));
+          (e = E[t % A] + e), (t = Math.floor(t / A));
         } while (t > 0);
         return e;
       }
@@ -300,7 +300,7 @@
         const t = S(+new Date());
         return t !== T ? ((O = 0), (T = t)) : t + "." + S(O++);
       }
-      for (; R < C; R++) A[E[R]] = R;
+      for (; R < A; R++) C[E[R]] = R;
       function B(t) {
         let e = "";
         for (let s in t)
@@ -324,7 +324,7 @@
         } catch (t) {}
         if (!e)
           try {
-            return new m[["Active"].concat("Object").join("X")](
+            return new g[["Active"].concat("Object").join("X")](
               "Microsoft.XMLHTTP"
             );
           } catch (t) {}
@@ -343,7 +343,7 @@
             this.create();
         }
         create() {
-          const t = g(
+          const t = m(
             this.opts,
             "agent",
             "pfx",
@@ -432,7 +432,7 @@
             ? attachEvent("onunload", D)
             : "function" == typeof addEventListener &&
               addEventListener(
-                "onpagehide" in m ? "pagehide" : "unload",
+                "onpagehide" in g ? "pagehide" : "unload",
                 D,
                 !1
               ));
@@ -440,7 +440,7 @@
           "function" == typeof Promise && "function" == typeof Promise.resolve
             ? (t) => Promise.resolve().then(t)
             : (t, e) => e(t, 0),
-        F = m.WebSocket || m.MozWebSocket,
+        F = g.WebSocket || g.MozWebSocket,
         V =
           "undefined" != typeof navigator &&
           "string" == typeof navigator.product &&
@@ -459,7 +459,7 @@
                 e = this.opts.protocols,
                 s = V
                   ? {}
-                  : g(
+                  : m(
                       this.opts,
                       "agent",
                       "perMessageDeflate",
@@ -2013,16 +2013,16 @@
         );
       }
       Object.assign(yt, { Manager: dt, Socket: pt, io: yt, connect: yt });
-      var mt = s(123),
-        gt = s.n(mt);
-      const bt = yt({ query: { roomID: gt()(document.location.pathname) } });
+      var gt = s(123),
+        mt = s.n(gt);
+      const bt = yt({ query: { roomID: mt()(document.location.pathname) } });
       bt.on("connect", () => {
         console.log("Connected with id: " + bt.id);
       });
       const vt = bt;
       var wt = s(606),
         kt = s.n(wt);
-      const _t = gt()(document.location.pathname),
+      const _t = mt()(document.location.pathname),
         Et = document.querySelector("#messages");
       document
         .querySelector("input#chatMessage")
@@ -2036,8 +2036,8 @@
               body: JSON.stringify({ message: e }),
             });
         });
-      const Ct = gt()(document.location.pathname),
-        At = document.querySelector("#user").dataset.userId,
+      const At = mt()(document.location.pathname),
+        Ct = document.querySelector("#user").dataset.userId,
         Tt = JSON.parse(
           document.querySelector("#boardTiles").dataset.boardTiles
         ),
@@ -2130,7 +2130,7 @@
                   });
             }
           );
-        })(Rt, Ct),
+        })(Rt, At),
         (function (t, e) {
           t.querySelector("#resignButton").addEventListener(
             "click",
@@ -2147,25 +2147,21 @@
                 });
             }
           );
-        })(Rt, Ct),
+        })(Rt, At),
         (function (t, e) {
           t.querySelector("#passButton").addEventListener("click", async () => {
-            const t = document.querySelectorAll(".board-square"),
-              s = Array.from(t).filter((t) => t.querySelector(".player-tile")),
-              n = [];
-            s.forEach((t) => {
-              const e = t.querySelector(".player-tile");
-              n.push(e), t.removeChild(e);
-            });
-            const r = document.getElementsByClassName("player-tiles")[0];
-            for (const t of r.children)
-              t.firstElementChild || t.appendChild(n.pop());
             await fetch(`/api/games/${e}/pass-turn`, {
               method: "post",
               headers: { "Content-Type": "application/json" },
-            });
+            })
+              .then((t) => {
+                console.log(t);
+              })
+              .catch((t) => {
+                console.log(t);
+              });
           });
-        })(Rt, Ct);
+        })(Rt, At);
       for (let t = 0; t < Tt.length; t++) {
         const e = Tt[t];
         xt(e.x, e.y, e.tile_id, e.letter);
@@ -2177,7 +2173,7 @@
         }
       }),
         vt.on("current-player", (t) => {
-          if (parseInt(t) == At) {
+          if (parseInt(t) == Ct) {
             St.forEach((t) => {
               t.disabled = !1;
             });
@@ -2197,7 +2193,7 @@
             .querySelector(".score").textContent = t.score;
         }),
         vt.on("game-ended", () => {
-          window.location.pathname = `/games/${Ct}/game-end`;
+          window.location.pathname = `/games/${At}/game-end`;
         });
     })();
 })();
