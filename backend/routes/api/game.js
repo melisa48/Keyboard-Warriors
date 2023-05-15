@@ -1,10 +1,12 @@
 const express = require("express");
+
 const Games = require("../../db/games");
 const Users = require("../../db/users");
 const GameUsers = require("../../db/game_users");
 const GameTiles = require("../../db/game_tiles");
 const Board = require("../../db/board");
 const CanonicalTiles = require("../../db/canonical_tiles");
+
 const { GAME_CREATED } = require("../../../shared/constants");
 
 const router = express.Router();
@@ -638,6 +640,8 @@ router.post("/:id/submit-word", async (request, response) => {
       tilesPlayed.length
     );
 
+    await Games.setGamePassCount(0, game_id);
+
     response.status(200).send(newTilesForUser);
   } catch (error) {
     response.status(500).json({ message: error.message });
@@ -694,9 +698,59 @@ router.post("/:id/resign", async (request, response) => {
       await giveTurnToNextPlayer(game_id, io);
     }
 
+    await Games.setGamePassCount(0, game_id);
+
     response.status(200).send("Success");
   } catch (error) {
     console.log(error);
+    response.status(500).json({ message: error.message });
+  }
+});
+
+router.post("/:id/pass-turn", async (request, response) => {
+  const { id: game_id } = request.params;
+  const { id: user_id } = request.session.user;
+  const io = request.app.get("io");
+
+  try {
+    // ensure player is in the game
+    const userInGame = await ensureUserInGame(user_id, game_id);
+    if (!userInGame) {
+      throw new Error("User not in game!");
+    }
+
+    // check if the player can make a turn
+    const userCanMakeTurn = await ensureUserCanMakeTurn(user_id, game_id);
+    if (!userCanMakeTurn) {
+      throw new Error("User can't make turn!");
+    }
+
+    // get number of non-resigned players in the game
+    const numberOfNonResignedPlayers = (
+      await GameUsers.getNonResignedPlayers(game_id)
+    ).length;
+
+    // get current number of passes in the game
+    const currentNumberOfPasses = (await Games.gameInformation(game_id))
+      .pass_count;
+
+    // check for end of game
+    if (numberOfNonResignedPlayers * 2 - 1 == currentNumberOfPasses) {
+      // game is over
+
+      // set in games table that game is over
+      await Games.setGameEnded(game_id);
+
+      // emit to everyone in room that game is over
+      io.sockets.in(game_id).emit("game-ended");
+    } else {
+      // increment pass count and turn control to next player
+      await Games.setGamePassCount(currentNumberOfPasses + 1, game_id);
+      await giveTurnToNextPlayer(game_id, io);
+    }
+
+    response.status(200).send("Success");
+  } catch (error) {
     response.status(500).json({ message: error.message });
   }
 });

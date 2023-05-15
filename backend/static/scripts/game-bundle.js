@@ -2147,6 +2147,20 @@
                 });
             }
           );
+        })(Rt, At),
+        (function (t, e) {
+          t.querySelector("#passButton").addEventListener("click", async () => {
+            await fetch(`/api/games/${e}/pass-turn`, {
+              method: "post",
+              headers: { "Content-Type": "application/json" },
+            })
+              .then((t) => {
+                console.log(t);
+              })
+              .catch((t) => {
+                console.log(t);
+              });
+          });
         })(Rt, At);
       for (let t = 0; t < Tt.length; t++) {
         const e = Tt[t];
