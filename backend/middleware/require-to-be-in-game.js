@@ -1,4 +1,4 @@
-const Games = require("../db/games");
+const GameUsers = require("../db/game_users");
 const getGameId = require("../../shared/get-game-id");
 
 // used for game pages, that require the player to be in the game to see the page
@@ -8,7 +8,7 @@ const requireToBeInGame = async (request, response, next) => {
   const gameID = getGameId(request.originalUrl);
 
   // check if user in game
-  const userInGame = await Games.check_user_in_game(user.id, gameID);
+  const userInGame = await GameUsers.checkUserInGame(user.id, gameID);
 
   if (userInGame) {
     next();

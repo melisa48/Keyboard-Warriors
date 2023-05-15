@@ -1,7 +1,7 @@
 const http = require("http");
 const { Server } = require("socket.io");
 
-const Games = require("../db/games.js");
+const GameUsers = require("../db/game_users.js");
 
 const initSockets = (app, sessionMiddleware) => {
   const server = http.createServer(app);
@@ -17,10 +17,10 @@ const initSockets = (app, sessionMiddleware) => {
 
     // if not the lobby room
     if (gameID != 0) {
-      const currentPlayer = await Games.getCurrentPlayerOfGame(gameID);
+      const currentPlayer = await GameUsers.getCurrentPlayerOfGame(gameID);
 
       // send the current player to everyone in the game room
-      io.sockets.in(gameID).emit("current-player", currentPlayer);
+      io.sockets.in(gameID).emit("current-player", currentPlayer.user_id);
     }
   });
 

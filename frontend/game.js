@@ -2,6 +2,7 @@ import socket from "./common_utilities/socket";
 import getGameId from "../shared/get-game-id";
 import { chatItemCreatedHandler } from "./common_utilities/chat";
 import { configureSubmitButton } from "./games/submit";
+import { configureResignButton } from "./games/resign";
 import { configurePassButton } from "./games/pass";
 
 const gameID = getGameId(document.location.pathname);
@@ -17,6 +18,7 @@ const gameButtons = gameButtonsContainer.querySelectorAll("button");
 
 chatItemCreatedHandler(socket);
 configureSubmitButton(gameButtonsContainer, gameID);
+configureResignButton(gameButtonsContainer, gameID);
 configurePassButton(gameButtonsContainer, gameID);
 
 function placeTileOnBoard(x, y, id, letter) {
@@ -58,7 +60,7 @@ socket.on("board-updated", (newTiles) => {
 });
 
 // enable/disable parts of game depending on if user is the current player or not
-socket.on("current-player", (currentPlayer) => {
+socket.on("current-player", (current_player_id) => {
   // if user isn't current player:
   // make tiles not draggable
   // disable game buttons
@@ -66,7 +68,7 @@ socket.on("current-player", (currentPlayer) => {
   // make tiles draggable
   // enable game buttons
 
-  if (parseInt(currentPlayer.user_id) == userID) {
+  if (parseInt(current_player_id) == userID) {
     // user is current player
 
     gameButtons.forEach((button) => {
@@ -93,4 +95,8 @@ socket.on("player-score-updated", (newPlayerScore) => {
   const playerDiv = document.querySelector(".player-" + newPlayerScore.user_id);
   const scoreDiv = playerDiv.querySelector(".score");
   scoreDiv.textContent = newPlayerScore.score;
+});
+
+socket.on("game-ended", () => {
+  window.location.pathname = `/games/${gameID}/game-end`;
 });

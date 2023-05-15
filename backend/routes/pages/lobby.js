@@ -9,7 +9,7 @@ router.get("/", async (request, response) => {
 
   try {
     const availableGames = await Games.list(user_id);
-    const gamesUserIsIn = await Games.games_user_is_in(user_id);
+    const gamesUserIsIn = await Games.gamesUserIsIn(user_id);
 
     const chat = await Chat.getMessages(0);
     response.render("lobby", {
