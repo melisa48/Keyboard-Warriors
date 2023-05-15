@@ -71,12 +71,10 @@ const firstWordPlacedInGame = async (gameID) => {
 };
 
 const setGamePassCount = async (count, gameID) => {
-  // update pass count to new value
   await db.none(SET_GAME_PASS_COUNT_SQL, [count, gameID]);
 };
 
 const getGamePlayerAndPassCount = async (gameID) => {
-  //Returns the game's current skip value.
   return await db.oneOrNone(GET_GAME_PLAYER_AND_PASS_SQL, [gameID]);
 };
 
