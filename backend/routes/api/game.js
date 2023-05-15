@@ -675,6 +675,9 @@ router.post("/:id/resign", async (request, response) => {
     // set the player resigned column to true
     await GameUsers.setResigned(true, game_id, user_id);
 
+    // give their tiles back to the bag
+    await GameTiles.giveTilesFromUserToBag(game_id, user_id);
+
     // get number of players originally in the game
     const numberOfPlayers = (await Games.gameInformation(game_id)).player_count;
 

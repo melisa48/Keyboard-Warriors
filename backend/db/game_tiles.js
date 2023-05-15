@@ -16,6 +16,11 @@ const GIVE_TILES_FROM_BAG_TO_USER_SQL = `
   WHERE game_id=$2 AND tile_id = ANY ($3)
   RETURNING tile_id`;
 
+const GIVE_TILES_FROM_USER_TO_BAG_SQL = `
+  UPDATE game_tiles
+  SET user_id=-1, x=-1, y=-1
+  WHERE game_id=$1 AND user_id=$2`;
+
 const CHECK_USER_HAS_TILE_SQL = `SELECT EXISTS(SELECT * FROM game_tiles WHERE user_id=$1 AND game_id=$2 AND tile_id=$3)`;
 
 const CHECK_IF_TILE_ON_BOARD_ALREADY_SQL = `SELECT EXISTS(SELECT * FROM game_tiles WHERE game_id=$1 AND user_id=0 AND x=$2 AND y=$3)`;
@@ -57,6 +62,10 @@ const giveTilesFromBagToUser = async (
   ]);
 };
 
+const giveTilesFromUserToBag = async (game_id, user_id) => {
+  await db.none(GIVE_TILES_FROM_USER_TO_BAG_SQL, [game_id, user_id]);
+};
+
 const checkUserHasTile = async (user_id, game_id, tile_id) => {
   const result = await db.one(CHECK_USER_HAS_TILE_SQL, [
     user_id,
@@ -85,6 +94,7 @@ module.exports = {
   getNumberOfTilesInBag,
   getTilesFromBag,
   giveTilesFromBagToUser,
+  giveTilesFromUserToBag,
   checkUserHasTile,
   tileOnBoardAlready,
   getTileOnGameBoard,

@@ -284,15 +284,15 @@
           "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_".split(
             ""
           ),
-        A = 64,
-        C = {};
+        C = 64,
+        A = {};
       let T,
         O = 0,
         R = 0;
       function S(t) {
         let e = "";
         do {
-          (e = E[t % A] + e), (t = Math.floor(t / A));
+          (e = E[t % C] + e), (t = Math.floor(t / C));
         } while (t > 0);
         return e;
       }
@@ -300,7 +300,7 @@
         const t = S(+new Date());
         return t !== T ? ((O = 0), (T = t)) : t + "." + S(O++);
       }
-      for (; R < A; R++) C[E[R]] = R;
+      for (; R < C; R++) A[E[R]] = R;
       function B(t) {
         let e = "";
         for (let s in t)
@@ -2036,8 +2036,8 @@
               body: JSON.stringify({ message: e }),
             });
         });
-      const At = mt()(document.location.pathname),
-        Ct = document.querySelector("#user").dataset.userId,
+      const Ct = mt()(document.location.pathname),
+        At = document.querySelector("#user").dataset.userId,
         Tt = JSON.parse(
           document.querySelector("#boardTiles").dataset.boardTiles
         ),
@@ -2130,7 +2130,7 @@
                   });
             }
           );
-        })(Rt, At),
+        })(Rt, Ct),
         (function (t, e) {
           t.querySelector("#resignButton").addEventListener(
             "click",
@@ -2140,14 +2140,15 @@
                 headers: { "Content-Type": "application/json" },
               })
                 .then((t) => {
-                  console.log(t);
+                  const e = document.querySelector(".player-tiles");
+                  for (; e.firstChild; ) e.removeChild(e.firstChild);
                 })
                 .catch((t) => {
                   console.log(t);
                 });
             }
           );
-        })(Rt, At),
+        })(Rt, Ct),
         (function (t, e) {
           t.querySelector("#passButton").addEventListener("click", async () => {
             await fetch(`/api/games/${e}/pass-turn`, {
@@ -2161,7 +2162,7 @@
                 console.log(t);
               });
           });
-        })(Rt, At);
+        })(Rt, Ct);
       for (let t = 0; t < Tt.length; t++) {
         const e = Tt[t];
         xt(e.x, e.y, e.tile_id, e.letter);
@@ -2173,7 +2174,7 @@
         }
       }),
         vt.on("current-player", (t) => {
-          if (parseInt(t) == Ct) {
+          if (parseInt(t) == At) {
             St.forEach((t) => {
               t.disabled = !1;
             });
@@ -2193,7 +2194,7 @@
             .querySelector(".score").textContent = t.score;
         }),
         vt.on("game-ended", () => {
-          window.location.pathname = `/games/${At}/game-end`;
+          window.location.pathname = `/games/${Ct}/game-end`;
         });
     })();
 })();
