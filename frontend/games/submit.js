@@ -72,7 +72,9 @@ export function configureSubmitButton(gameButtonsContainer, gameID) {
             divElement.id = newTiles[iterator].id;
             divElement.classList += "player-tile square no-drop";
             divElement.style = "background-color: #E1B995;";
+            // divElement.addEventListener("dragstart", drag);
             divElement.addEventListener("dragstart", drag);
+            divElement.draggable = true;
             divElement.textContent = newTiles[iterator].letter;
 
             // append the newly created player-tile to the tile box which is missing a tile

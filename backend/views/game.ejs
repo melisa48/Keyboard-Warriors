@@ -54,6 +54,25 @@
             </div>
           <% } %>
         </div>
+        
+        <div id="swapDiv" style="display: none;">
+          <p>Drop tiles below.</p>
+          <div class="swap-tiles">
+            <% for (let i = 0; i < playerTiles.length; i++) { %>
+              <div
+                class="swap-tile-box"
+                style="display: inline-block;"
+                ondrop="drop(event)"
+                ondragover="allowDrop(event)"
+              >
+              </div>
+              <% } %>
+          </div>
+          <div id="swapButtons">
+            <button id="cancelSwap">cancel</button>
+            <button id="confirmSwap">confirm</button>
+          </div>
+        </div>
 
         <div id="gameButtons">
           <button id="resignButton">Resign</button>

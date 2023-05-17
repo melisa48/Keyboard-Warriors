@@ -10,6 +10,7 @@ const { GAME_CREATED } = require("../../../shared/constants");
 const router = express.Router();
 
 const scrabbleWords = require("../../scrabbleWords");
+const { response } = require("express");
 
 router.get("/list", async (request, response) => {
   const { id: user_id } = request.session.user;
@@ -641,6 +642,68 @@ router.post("/:id/submit-word", async (request, response) => {
     response.status(200).send(newTilesForUser);
   } catch (error) {
     response.status(500).json({ message: error.message });
+  }
+});
+
+router.post("/:id/swap", async (request, response) => {
+  const { id: game_id } = request.params;
+  const { id: user_id } = request.session.user;
+  const io = request.app.get("io");
+  const tilesSent = request.body;
+
+  try{
+    //ensure player is in game
+    const userInGame = await ensureUserInGame(user_id, game_id);
+    if (!userInGame) {
+      throw new Error("User not in game!");
+    }
+
+    //ensure it is player's turn
+    const userCanMakeTurn = await ensureUserCanMakeTurn(user_id, game_id);
+    if (!userCanMakeTurn) {
+      throw new Error("User can't make turn!");
+    }
+
+    //check if enough tiles in bag
+    const numTilesinBag = await GameTiles.getNumberOfTilesInBag(game_id);
+    if (numTilesinBag < 7){
+      throw new Error("Bag does not have enough tiles!");
+    }
+
+    // parse request object and get tiles they want to swap (?)
+    // ensure player has tiles
+    const userHasTiles = await ensureUserHasTiles(
+      user_id,
+      game_id,
+      tilesSent, //rename in request
+      "canonicalTileID"
+    );
+
+    if (!userHasTiles){
+      throw new Error("User doesn't have the tiles!");
+    }
+
+    //give user new tiles(giveTilesFromBagToUser)
+    const newTiles = await giveTilesFromBagToUser(
+      user_id, game_id, tilesSent.length
+    );
+
+    //set the user's old tiles' user_id to -1 in game_tiles
+    for (const tile of tilesSent){
+      await GameTiles.updateGameTiles(
+        game_id, -1, tile.canonicalTileID, -1, -1
+      );
+    }
+    //give next player turn
+    await giveTurnToNextPlayer(game_id, io);
+    //set pass count to 0
+    // await Games.setGamePassCount(0, game_id);
+    //return new tiles to frontend
+    // console.log("HERE");
+    response.status(200).json(newTiles);
+  } catch (error){
+    console.log(error);
+    response.status(500).json({message: error.message});
   }
 });
 
