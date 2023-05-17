@@ -76,7 +76,8 @@
   transform: translate(-50%, -50%);
 }
 
-.player-tiles .square {
+.player-tiles .square,
+.swap-tiles .square {
   width: 45px;
   height: 45px;
 }

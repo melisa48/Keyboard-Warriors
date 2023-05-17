@@ -3,7 +3,11 @@ import getGameId from "../shared/get-game-id";
 import { chatItemCreatedHandler } from "./common_utilities/chat";
 import { configureSubmitButton } from "./games/submit";
 import { configureResignButton } from "./games/resign";
-import { configureSwapButton, configureCancelSwapButton, configureConfirmSwapButton } from "./games/swap";
+import {
+  configureSwapButton,
+  configureCancelSwapButton,
+  configureConfirmSwapButton,
+} from "./games/swap";
 
 const gameID = getGameId(document.location.pathname);
 const userID = document.querySelector("#user").dataset.userId;
@@ -17,14 +21,13 @@ const gameButtonsContainer = document.getElementById("gameButtons");
 const gameButtons = gameButtonsContainer.querySelectorAll("button");
 
 const swapButtonsContainer = document.getElementById("swapButtons");
-const swapButtons = swapButtonsContainer.querySelectorAll("button");
 
 chatItemCreatedHandler(socket);
 configureSubmitButton(gameButtonsContainer, gameID);
 configureResignButton(gameButtonsContainer, gameID);
-configureSwapButton(gameButtonsContainer, gameID);
+configureSwapButton(gameButtonsContainer);
 
-configureCancelSwapButton(swapButtonsContainer, gameID);
+configureCancelSwapButton(swapButtonsContainer);
 configureConfirmSwapButton(swapButtonsContainer, gameID);
 
 function placeTileOnBoard(x, y, id, letter) {
