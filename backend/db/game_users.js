@@ -12,6 +12,10 @@ const GET_RESIGNED_PLAYERS = `SELECT *
 FROM game_users
 WHERE game_id=$1 AND resigned=true`;
 
+const GET_NON_RESIGNED_PLAYERS = `SELECT *
+FROM game_users
+WHERE game_id=$1 AND resigned=false`;
+
 const PLAYERS_AND_SCORES_SQL = `SELECT u.id, u.username, gu.score
 FROM game_users gu, users u
 WHERE gu.game_id=$1 AND gu.user_id=u.id`;
@@ -57,6 +61,10 @@ const setResigned = async (resigned, game_id, user_id) => {
 
 const getResignedPlayers = async (game_id) => {
   return await db.any(GET_RESIGNED_PLAYERS, [game_id]);
+};
+
+const getNonResignedPlayers = async (game_id) => {
+  return await db.any(GET_NON_RESIGNED_PLAYERS, [game_id]);
 };
 
 const playersAndScores = async (game_id) => {
@@ -123,6 +131,7 @@ module.exports = {
   setUserScore,
   setResigned,
   getResignedPlayers,
+  getNonResignedPlayers,
   playersAndScores,
   getCurrentPlayerOfGame,
   setCurrentPlayerOfGame,

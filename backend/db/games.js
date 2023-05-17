@@ -23,6 +23,8 @@ const SET_FIRST_WORD_PLACED_TO_TRUE_SQL = `UPDATE games SET first_word_placed=tr
 
 const FIRST_WORD_PLACED_IN_GAME_SQL = `SELECT EXISTS(SELECT * FROM games WHERE id=$1 AND first_word_placed=true)`;
 
+const SET_GAME_PASS_COUNT_SQL = `UPDATE games SET pass_count=$1 WHERE id=$2`;
+
 const gameInformation = async (game_id) => {
   return await db.one(GAME_INFORMATION_SQL, [game_id]);
 };
@@ -66,6 +68,10 @@ const firstWordPlacedInGame = async (gameID) => {
   return result.exists;
 };
 
+const setGamePassCount = async (count, gameID) => {
+  await db.none(SET_GAME_PASS_COUNT_SQL, [count, gameID]);
+};
+
 module.exports = {
   gameInformation,
   setGameEnded,
@@ -76,4 +82,5 @@ module.exports = {
   setFirstWordPlacedToTrue,
   setStartedAtTime,
   checkGameStarted,
+  setGamePassCount,
 };

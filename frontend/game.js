@@ -8,6 +8,7 @@ import {
   configureCancelSwapButton,
   configureConfirmSwapButton,
 } from "./games/swap";
+import { configurePassButton } from "./games/pass";
 
 const gameID = getGameId(document.location.pathname);
 const userID = document.querySelector("#user").dataset.userId;
@@ -26,6 +27,7 @@ chatItemCreatedHandler(socket);
 configureSubmitButton(gameButtonsContainer, gameID);
 configureResignButton(gameButtonsContainer, gameID);
 configureSwapButton(gameButtonsContainer);
+configurePassButton(gameButtonsContainer, gameID);
 
 configureCancelSwapButton(swapButtonsContainer);
 configureConfirmSwapButton(swapButtonsContainer, gameID);

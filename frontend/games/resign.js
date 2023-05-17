@@ -7,7 +7,13 @@ export function configureResignButton(gameButtonsContainer, gameID) {
       headers: { "Content-Type": "application/json" },
     })
       .then((response) => {
-        console.log(response);
+        // remove the player's rack
+
+        const playerTiles = document.querySelector(".player-tiles");
+
+        while (playerTiles.firstChild) {
+          playerTiles.removeChild(playerTiles.firstChild);
+        }
       })
       .catch((error) => {
         console.log(error);
