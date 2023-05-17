@@ -1,4 +1,13 @@
-body {
-  background-color: teal;
-  color: white;
+#authenticationButtons {
+  text-align: center;
+}
+
+#authenticationButtons a {
+  display: block;
+  width: 10%;
+  margin: auto;
+}
+
+#signUpButton {
+  margin-top: 15px;
 }

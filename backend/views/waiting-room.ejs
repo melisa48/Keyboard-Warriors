@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <%- include('./partials/header', {title: title}); %>
+    <style>
+      #players-list {
+        display: table;
+        margin: 20px auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="content-wrap">
+      <%- include('./partials/navbars/authenticated_navbar', {username: username, id: id}); %>
+
+      <h1 class="page-title"><%= gameTitle %></h1>
+
+      <div style="text-align: center;">
+        <ul id="players-list">
+          <% for(let i = 0; i < players.length; i++) { %>
+          <li><span class="player-username"><%= players[i].username %></span></li>
+          <% } %>
+        </ul>
+  
+        <button onclick="window.location.href='/games/<%= gameID %>/start-game'">Start Game</button>
+      </div>
+    </div>
+    <%- include('./partials/footer'); %>
+    <script src="/scripts/waiting_room-bundle.js"></script>
+  </body>
+</html>

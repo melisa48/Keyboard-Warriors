@@ -1,21 +1,145 @@
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/stylesheets/home.css" type="text/css">
-  </head>
-  <body>
-    <p>Game <%= gameID %> (Authenticated)</p>
+
+<head>
+  <%- include('./partials/header', {title: title}); %>
+  <link rel="stylesheet" href="/stylesheets/game.css" type="text/css">
+  <style>
+    .player-scores {
+      margin-top: 30%;
+      font-size: 25px;
+      text-align: center;
+    }
+
+    .player-scores-text {
+      font-size: 35px;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="content-wrap">
+    <%- include('./partials/navbars/authenticated_navbar', {username: username, id: id}); %>
     
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="/games/42">Game with ID 42</a></li>
-      <li><a href="/lobby">Lobby</a></li>
-      <li><a href="/profile">Profile</a></li>
-      <li><a href="/authentication/log-out">Log-Out</a></li>
-    </ul>
+    <h1 class="page-title">Game <%= gameID %></h1>
+    <div class="game-page">
+      <div class="board-and-player-tiles" style="width: 50%">
+        <div class="board">
+          <% for (let i = 0; i < 15; i++) { %>
+            <% for (let j = 0; j < 15; j++) { %>
+              <% let index = i * 15 + j %>
+              <div
+                x=<%= i %>
+                y=<%= j %>
+                class="board-square square"
+                ondrop="drop(event)"
+                ondragover="allowDrop(event)"
+              <% if (board[index].letter_multiplier === 2) { %>
+                style="background-color:lightblue">
+              <% } else if (board[index].letter_multiplier === 3) { %>
+                style="background-color:teal;">
+              <% } else if (board[index].word_multiplier === 2) { %>
+                style="background-color: pink;">
+              <% } else if (board[index].word_multiplier === 3) { %>
+                style="background-color: red;">
+              <% } else { %>
+                >
+              <% } %>
+              </div>
+            <% } %>
+          <% } %>
+        </div>
 
-    <p>You are: <%= username %> <%= email %> (<%= id %>)</p>
+        <div class="player-tiles">
+          <% for (let i = 0; i < playerTiles.length; i++) { %>
+            <div
+              class="tile-box"
+              ondrop="drop(event)"
+              ondragover="allowDrop(event)"
+            >
+              <div
+                id="<%= playerTiles[i].tile_id %>"
+                class="player-tile square no-drop"
+                style="background-color: #E1B995;"
+                ondragstart="drag(event)"
+              ><%= playerTiles[i].letter %></div>
+            </div>
+          <% } %>
+        </div>
+        
+        <div id="swapDiv" style="display: none;">
+          <p>Drop tiles to be swapped below.</p>
+          <div class="swap-tiles">
+            <% for (let i = 0; i < playerTiles.length; i++) { %>
+              <div
+                class="swap-tile-box"
+                style="display: inline-block;"
+                ondrop="drop(event)"
+                ondragover="allowDrop(event)"
+              >
+              </div>
+              <% } %>
+          </div>
+          <div id="swapButtons">
+            <button id="cancelSwap">cancel</button>
+            <button id="confirmSwap">confirm</button>
+          </div>
+        </div>
 
-    <script src="/scripts/bundle.js"></script>
-  </body>
+        <div id="gameButtons">
+          <button id="resignButton">Resign</button>
+          <button id="passButton">Pass</button>
+          <button id="swapButton">Swap</button>
+          <button id="submitButton">Submit</button>
+        </div>
+      </div>
+      <div class="chat-and-players" style="width: 50%">
+        <%- include('partials/chat.ejs') %>
+        
+        <div class="player-scores">
+          <div class="player-scores-text">Player Scores:</div>
+          <%- include('./partials/players-and-scores', { playersAndScores: playersAndScores }); %>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div>
+
+  <!-- Data used in JavaScript files -->
+  <div id="user" data-user-id="<%= id %>"></div>
+  <div id="boardTiles" data-board-tiles="<%= JSON.stringify(boardTiles); %>"></div>
+
+  <%- include('./partials/footer'); %>
+  <script>
+    // called by ondragover event to specify where dragged data can be dropped;
+    // allows a drop by preventing default handling of element
+    function allowDrop(ev) {
+      ev.preventDefault();
+    }
+
+    // specifies what should happen when the element is dragged
+    function drag(ev) {
+      // sets the data type and the value of the dragged data
+      ev.dataTransfer.setData("text", ev.target.id);
+    }
+
+    // called when dragged data is dropped
+    function drop(ev) {
+      // check if the target is another tile; don't allow
+      // drop on another tile
+      if (!ev.target.classList.contains("no-drop")) {
+        ev.preventDefault();
+
+        // gets dragged data; returns data that was set to same type in setData()
+        var data = ev.dataTransfer.getData("text");
+
+        // appends dragged element into drop element
+        ev.target.appendChild(document.getElementById(data));
+      }
+    }
+  </script>
+  <script src="/scripts/game-bundle.js"></script>
+  </div>
+</body>
+
 </html>

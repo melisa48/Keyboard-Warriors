@@ -4,5 +4,7 @@ module.exports = {
   lobbyRoutes: require("./pages/lobby"),
   profileRoutes: require("./pages/profile"),
   authenticationRoutes: require("./pages/authentication"),
+  logOutRoutes: require("./pages/log-out"),
   chatRoutes: require("./pages/chat"),
+  apiGameRoutes: require("./api/game"),
 };

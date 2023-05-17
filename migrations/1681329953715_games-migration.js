@@ -15,14 +15,23 @@ exports.up = (pgm) => {
     },
     pass_count: {
       type: "integer",
+      default: 0,
     },
     created_at: {
       type: "timestamp",
       notNull: true,
       default: pgm.func("current_timestamp"),
     },
+    first_word_placed: {
+      type: "boolean",
+      default: false,
+    },
     started_at: {
       type: "timestamp",
+    },
+    game_ended: {
+      type: "boolean",
+      default: false,
     },
   });
 };

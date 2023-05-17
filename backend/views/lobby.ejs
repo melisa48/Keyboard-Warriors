@@ -1,27 +1,56 @@
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel="stylesheet" href="/stylesheets/home.css" type="text/css">
-  </head>
-  <body>
-    <p>Lobby (Authenticated)</p>
 
-    <ul>
-      <li><a href="/">Home</a></li>
-      <li><a href="/games/42">Game with ID 42</a></li>
-      <li><a href="/lobby">Lobby</a></li>
-      <li><a href="/profile">Profile</a></li>
-      <li><a href="/authentication/log-out">Log-Out</a></li>
-    </ul>
+<head>
+  <%- include('./partials/header', {title: title}); %>
+  <style>
+    #lobby {
+      display: flex;
+      justify-content: space-around;
+    }
+  </style>
+</head>
 
-    <div id="chat-container">
-      <div id="messages"></div>
-      <label>
-        <input id="chatMessage" name="chat-message" placeholder="Message..." />
-      </label>
+<body>
+  <div id="content-wrap">
+    <%- include('./partials/navbars/authenticated_navbar', {username: username, id: id}); %>
+    
+    <h1 class="page-title">Lobby (Authenticated)</h1>
+
+    <div id="lobby">
+      <div id="user-in-games">
+        <h3>Games you are In:</h3>
+        <ul id="games-user-in-list">
+          <% for(let i = 0; i < gamesUserIsIn.length; i++) { %>
+          <li>
+            <span class="game-title"><%= gamesUserIsIn[i].title %></span>
+            <button onclick="window.location.href='/games/<%= gamesUserIsIn[i].game_id %>'">Go</button>
+          </li>
+          <% } %>
+        </ul>
+      </div>
+      <div id="games-container">
+        <h3>Create or Join an Existing Game:</h3>
+        <button onclick="window.location.href='/games/create-game'">Create Game</button>
+        <ul id="games-list">
+          <% for(let i = 0; i < games.length; i++) { %>
+          <li>
+            <span class="game-title"><%= games[i].title %></span>
+            <button onclick="window.location.href='/api/games/<%= games[i].id %>/join'">Join</button>
+          </li>
+          <% } %>
+        </ul>
+      </div>
+      <%- include('partials/chat.ejs') %>
     </div>
+  </div>
+  <template id="available-game-item">
+    <li>
+      <span class="game-title"></span>
+      <button onclick="">Join</button>
+    </li>
+  </template>
+  <%- include('./partials/footer'); %>
+  <script src="/scripts/lobby-bundle.js"></script>
+</body>
 
-    <script src="/scripts/bundle.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-  </body>
 </html>

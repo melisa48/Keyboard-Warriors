@@ -1,11 +1,10 @@
-import io from "socket.io-client";
-import events from "../backend/sockets/constants";
-
-const socket = io();
+import events from "../../backend/sockets/constants";
+import getGameId from "../../shared/get-game-id";
+const game_id = getGameId(document.location.pathname);
 
 const messageContainer = document.querySelector("#messages");
 
-socket.on(events.CHAT_MESSAGE_RECEIVED, ({ username, message, timestamp }) => {
+function createChatItem(username, message, timestamp) {
   const entry = document.createElement("div");
 
   const displayName = document.createElement("span");
@@ -19,8 +18,19 @@ socket.on(events.CHAT_MESSAGE_RECEIVED, ({ username, message, timestamp }) => {
 
   entry.append(displayName, displayMessage, displayTimestamp);
 
-  messageContainer.appendChild(entry);
-});
+  return entry;
+}
+
+export function chatItemCreatedHandler(socket) {
+  socket.on(
+    events.CHAT_MESSAGE_RECEIVED,
+    ({ username, message, timestamp }) => {
+      messageContainer.appendChild(
+        createChatItem(username, message, timestamp)
+      );
+    }
+  );
+}
 
 document
   .querySelector("input#chatMessage")
@@ -32,7 +42,7 @@ document
     const message = event.target.value;
     event.target.value = "";
 
-    fetch("/chat/0", {
+    fetch(`/chat/${game_id}`, {
       method: "post",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message }),

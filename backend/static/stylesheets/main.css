@@ -1,0 +1,117 @@
+/* CSS that will apply to every page on the website */
+
+/* Navbar: Credit to Adam111p: https://stackoverflow.com/a/47273110 */
+#navbar {
+  background-color: rgb(0, 221, 255);
+  height: 35px;
+  padding: 5px 0;
+  position: relative;
+}
+
+#navbar div {
+  display: inline-block;
+  position: absolute;
+}
+
+#logo {
+  left: 0px;
+}
+
+#logo img {
+  max-height: 50px;
+  max-width: 50px;
+}
+
+#gameTitle {
+  font-size: 30px;
+  left: 0%;
+  right: 0%;
+  text-align: center;
+}
+
+#accountDropdown {
+  right: 0%;
+}
+
+#accountDropdown .dropdown-content {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+#accountDropdown:hover .dropdown-content {
+  display: block;
+}
+/* End of Navbar */
+
+body {
+  background-color: white;
+  color: black;
+  margin: 0px;
+  min-height: 100vh;
+  position: relative;
+}
+
+#content-wrap {
+  padding-bottom: 2.5rem;
+}
+
+.page-title {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+/* Forms */
+#formHolder {
+  text-align: center;
+}
+
+#formHolder form {
+  display: inline-block;
+  text-align: left;
+}
+
+form > input {
+  display: block;
+  margin-bottom: 10px;
+}
+
+#buttonHolder {
+  text-align: center;
+}
+
+/* Buttons */
+.btn {
+  background-color: #a9a9a9;
+  padding: 15px 25px;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background-color: #808080;
+}
+
+/* Footer */
+#footer {
+  background-color: #808080;
+  bottom: 0;
+  padding: 10px 0;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+}

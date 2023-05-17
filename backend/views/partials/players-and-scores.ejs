@@ -1,0 +1,8 @@
+<div class="players">
+  <% for (let i = 0; i < playersAndScores.length; i++) { %>
+    <div class="player-<%= playersAndScores[i].id %>">
+      <div class="username"><%= playersAndScores[i].username %></div>
+      <div class="score"><%= playersAndScores[i].score %></div>
+    </div>
+  <% } %>
+</div>

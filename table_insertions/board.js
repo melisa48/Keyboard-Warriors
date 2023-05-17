@@ -240,11 +240,11 @@ async function run() {
   let client;
   try {
     client = new pg.Client({
-      // connectionString:
+      connectionString:
+        "postgres://preetham@localhost:5432/term-project-scrabble",
     });
     await client.connect();
     let { rows } = await client.query(query);
-    console.log(rows);
   } catch (e) {
     console.error(e);
   } finally {

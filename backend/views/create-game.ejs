@@ -1,0 +1,46 @@
+<html>
+  <head>
+    <%- include('./partials/header', {title: title}); %>
+    <style>
+      #number_of_players {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="content-wrap">
+      <%- include('./partials/navbars/authenticated_navbar', {username: username, id: id}); %>
+
+      <h1 class="page-title">Create Game</h1>
+
+      <div id="formHolder">
+        <form action="/api/games/create" method="post">
+          <label for="game_title">Game Title</label>
+          <input
+            id="game_title"
+            name="game_title"
+            type="text"
+            placeholder="Game Title"
+            autocomplete="game_title"
+            required />
+          
+          <label for="number_of_players">Number of Players</label>
+          <input
+            id="number_of_players"
+            name="number_of_players"
+            type="number"
+            placeholder="Number of Players"
+            autocomplete="number_of_players"
+            min="2"
+            max="4"
+            required />
+          
+          <div id="buttonHolder">
+            <input type="submit" value="Create Game" />
+          </div>
+        </form>
+      </div>
+    </div>
+    <%- include('./partials/footer'); %>
+  </body>
+</html>
