@@ -3,6 +3,18 @@
 <head>
   <%- include('./partials/header', {title: title}); %>
   <link rel="stylesheet" href="/stylesheets/game.css" type="text/css">
+  <style>
+    .player-scores {
+      margin-top: 30%;
+      font-size: 25px;
+      text-align: center;
+    }
+
+    .player-scores-text {
+      font-size: 35px;
+      margin-bottom: 15px;
+    }
+  </style>
 </head>
 
 <body>
@@ -65,7 +77,10 @@
       <div class="chat-and-players" style="width: 50%">
         <%- include('partials/chat.ejs') %>
         
-        <%- include('./partials/players-and-scores', { playersAndScores: playersAndScores }); %>
+        <div class="player-scores">
+          <div class="player-scores-text">Player Scores:</div>
+          <%- include('./partials/players-and-scores', { playersAndScores: playersAndScores }); %>
+        </div>
       </div>
     </div>
   </div>
