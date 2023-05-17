@@ -705,10 +705,10 @@ router.post("/:id/swap", async (request, response) => {
       );
     }
 
-    //give turn to next player
+    // give turn to next player
     await giveTurnToNextPlayer(game_id, io);
 
-    //set pass count to 0
+    // set pass count to 0
     await Games.setGamePassCount(0, game_id);
 
     // return new tiles to frontend

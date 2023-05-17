@@ -54,7 +54,7 @@ export function configureConfirmSwapButton(swapButtonsContainer, gameID) {
 
           if (tileBoxElements[i].childElementCount == 0) {
             const divElement = document.createElement("div");
-            divElement.id = newTiles[iterator].canonicalTileID;
+            divElement.id = newTiles[iterator].id;
             divElement.classList += "player-tile square no-drop";
             divElement.style = "background-color: #E1B995;";
             divElement.addEventListener("dragstart", drag);
