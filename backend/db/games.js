@@ -10,7 +10,8 @@ const CREATE_GAME_SQL =
 const GAMES_LIST_SQL = `
 SELECT g.id, g.title, g.created_at FROM games g WHERE g.id NOT IN
   (SELECT gu.game_id FROM game_users gu WHERE gu.user_id = $1) AND
-(SELECT COUNT(*) FROM game_users WHERE game_users.game_id=g.id) < g.player_count`;
+(SELECT COUNT(*) FROM game_users WHERE game_users.game_id=g.id) < g.player_count AND
+g.started_at IS NULL`;
 
 const GAMES_USER_IS_IN_SQL = `SELECT gu.game_id, g.title FROM game_users gu, games g
   WHERE gu.game_id = g.id AND gu.user_id=$1`;

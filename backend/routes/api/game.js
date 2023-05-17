@@ -60,6 +60,11 @@ router.get("/:id/join", async (request, response) => {
       return response.redirect(`/lobby`);
     }
 
+    // don't allow join if game has started already
+    if (await Games.checkGameStarted(game_id)) {
+      return response.redirect(`/lobby`);
+    }
+
     await GameUsers.insertUserInGame(
       game_id,
       user_id,
